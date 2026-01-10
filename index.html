@@ -4,74 +4,136 @@
 <meta charset="UTF-8">
 <title>Gioco di Carte Personalizzato</title>
 <link rel="stylesheet" href="css/style.css">
+<style>
+/* --- STILI BASE --- */
+body {
+  font-family: Arial, sans-serif;
+  background: #121212;
+  color: white;
+  margin: 0;
+  padding: 16px;
+}
+button {
+  cursor: pointer;
+  border-radius: 6px;
+  padding: 6px 12px;
+  border: none;
+  background-color: #444;
+  color: white;
+}
+button:hover { background-color: #666; }
+.screen { display: none; }
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(225px,1fr));
+  gap: 10px;
+}
+#table.cards { grid-template-columns: repeat(5,225px); justify-content:center; }
+.card {
+  width:225px; height:321px; border-radius:14px;
+  border:2px solid #444; box-shadow:0 4px 8px rgba(0,0,0,0.4);
+  background: #251B1C;
+  overflow:hidden; cursor:pointer; user-select:none;
+}
+.card img { width:100%; height:100%; object-fit:contain; }
+.card.selected { outline: 4px solid gold; }
+#zoomOverlay {
+  position:fixed; top:0; left:0; width:100%; height:100%;
+  display:none; align-items:center; justify-content:center;
+  background: rgba(0,0,0,0.9); z-index:999;
+}
+#zoomOverlay img { max-width:90%; max-height:90%; border-radius:16px; }
+
+/* --- POPUP ESCI --- */
+#exitPopup {
+  display:none;
+  position:fixed; top:0; left:0; width:100%; height:100%;
+  background: rgba(0,0,0,0.8);
+  color:white; z-index:1000;
+  display:flex; align-items:center; justify-content:center;
+}
+#exitPopupContent {
+  background:#251B1C; padding:20px; border-radius:12px;
+  text-align:center; max-width:300px;
+}
+#exitPopupContent button { margin:6px; width:90%; }
+</style>
 </head>
 <body>
 
 <div class="container">
 
-  <!-- START SCREEN -->
-  <div id="startScreen" class="screen">
-    <h2>Benvenuto nel Gioco di Carte</h2>
-    <button onclick="startNewGame()">Nuova Partita</button>
-    <button onclick="loadGame()">Carica Partita</button>
-  </div>
-
-  <!-- LOAD SCREEN -->
-  <div id="loadScreen" class="screen">
-    <h2>Partite Salvate</h2>
-    <div id="savedGamesList"></div>
-    <button onclick="backToStart()">Indietro</button>
-  </div>
-
-  <!-- GAME SCREEN -->
-  <div id="gameScreen" class="screen">
-    <h2>Gioco di Carte</h2>
-
-    <div style="margin-bottom:12px;">
-      <button onclick="shuffleDeck()">Mescola Mazzo</button>
-      <button onclick="drawCard()">Pesca</button>
-      <button onclick="putSelectedBottom()">Metti sul fondo</button>
-      <button onclick="toggleDeckView()">Mostra/Nascondi Mazzo</button>
-      <button id="fullscreenBtn" onclick="toggleFullScreen()">Full Screen</button>
-      <button onclick="saveGame()">Salva Partita</button>
-    </div>
-
-    <div>Dimensione mazzo: <span id="deckSize"></span></div>
-
-    <h3>Mano</h3>
-    <div id="hand" class="cards"></div>
-
-    <h3>Tavolo (5 per riga)</h3>
-    <button onclick="placeSelectedOnTable()">Metti Mano → Tavolo</button>
-    <button onclick="returnSelectedFromTable()">Tavolo → Mano</button>
-    <div id="table" class="cards"></div>
-
-    <div id="deckView">
-      <h3>Mazzo (carte visibili)</h3>
-      <button onclick="moveDeckSelectedToHand()">Mazzo → Mano</button>
-      <div id="deckCards" class="cards"></div>
-    </div>
-  </div>
-
-  <!-- ZOOM -->
-  <div id="zoomOverlay" onclick="closeZoom()">
-    <img id="zoomImg">
-  </div>
-
+<!-- START SCREEN -->
+<div id="startScreen" class="screen">
+  <h2>Benvenuto nel Gioco di Carte</h2>
+  <button onclick="startNewGame()">Nuova Partita</button>
+  <button onclick="loadGame()">Carica Partita</button>
 </div>
 
+<!-- LOAD SCREEN -->
+<div id="loadScreen" class="screen">
+  <h2>Partite Salvate</h2>
+  <div id="savedGamesList"></div>
+  <button onclick="backToStart()">Indietro</button>
+</div>
+
+<!-- GAME SCREEN -->
+<div id="gameScreen" class="screen">
+  <h2>Gioco di Carte</h2>
+
+  <div>
+    <button onclick="shuffleDeck()">Mescola Mazzo</button>
+    <button onclick="drawCard()">Pesca</button>
+    <button onclick="putSelectedBottom()">Metti sul fondo</button>
+    <button onclick="toggleDeckView()">Mostra/Nascondi Mazzo</button>
+    <button id="fullscreenBtn" onclick="toggleFullScreen()">Full Screen</button>
+    <button onclick="saveGame()">Salva Partita</button>
+    <button onclick="exitGame()">Esci dalla Partita</button>
+  </div>
+
+  <div>Dimensione mazzo: <span id="deckSize"></span></div>
+
+  <h3>Mano</h3>
+  <div id="hand" class="cards"></div>
+
+  <h3>Tavolo (5 per riga)</h3>
+  <button onclick="placeSelectedOnTable()">Metti Mano → Tavolo</button>
+  <button onclick="returnSelectedFromTable()">Tavolo → Mano</button>
+  <div id="table" class="cards"></div>
+
+  <div id="deckView">
+    <h3>Mazzo (carte visibili)</h3>
+    <button onclick="moveDeckSelectedToHand()">Mazzo → Mano</button>
+    <div id="deckCards" class="cards"></div>
+  </div>
+</div>
+
+<!-- ZOOM -->
+<div id="zoomOverlay" onclick="closeZoom()">
+  <img id="zoomImg">
+</div>
+
+<!-- POPUP ESCI -->
+<div id="exitPopup">
+  <div id="exitPopupContent" role="dialog" aria-modal="true" aria-labelledby="exitTitle">
+    <h3 id="exitTitle">Vuoi salvare la partita prima di uscire?</h3>
+    <button onclick="saveAndExit()">💾 Salva e Esci</button>
+    <button onclick="exitWithoutSaving()">🚪 Esci senza salvare</button>
+    <button onclick="closeExitPopup()">❌ Annulla</button>
+  </div>
+</div>
+
+<!-- JS -->
 <script src="js/game.js"></script>
 <script>
 /***************
- INIT SCREENS
+ INIT SCHERMATE
 ***************/
 document.getElementById('startScreen').style.display='block';
 document.getElementById('gameScreen').style.display='none';
 document.getElementById('loadScreen').style.display='none';
 </script>
 
+</div>
 </body>
 </html>
-
-
-
