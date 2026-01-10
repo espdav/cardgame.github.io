@@ -1,342 +1,60 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="it">
 <head>
 <meta charset="UTF-8" />
-<title>Custom Image Card Game</title>
-
-<style>
-body{
-  font-family: Arial, sans-serif;
-  background:#121212;
-  color:white;
-  margin:0;
-  padding:16px;
-}
-
-/* responsive layout for 1280x800 landscape tablet */
-.container{
-  max-width:1280px;
-  margin:auto;
-}
-
-.zone{ margin-bottom:16px; }
-
-.cards{
-  display:grid;
-  grid-template-columns:repeat(auto-fill, minmax(225px,1fr));
-  gap:10px;
-}
-
-/* exactly 5 cards per row on table */
-#table.cards{
-  grid-template-columns:repeat(5,225px);
-  justify-content:center;
-}
-
-/* card frame */
-.card{
-  width:225px;
-  height:321px;
-  background:#251B1C;
-  border-radius:14px;
-  border:2px solid #444;
-  box-shadow:0 4px 8px rgba(0,0,0,0.4);
-  position:relative;
-  overflow:hidden;
-  cursor:pointer;
-  user-select:none;
-}
-
-/* fit PNG without stretching */
-.card img{
-  width:100%;
-  height:100%;
-  object-fit:contain;
-}
-
-.card.selected{
-  outline:4px solid gold;
-}
-
-/* zoom viewer */
-#zoomOverlay{
-  position:fixed;
-  top:0;
-  left:0;
-  width:100%;
-  height:100%;
-  background:rgba(0,0,0,0.9);
-  display:none;
-  align-items:center;
-  justify-content:center;
-  z-index:999;
-}
-
-#zoomOverlay img{
-  max-width:90%;
-  max-height:90%;
-  border-radius:16px;
-}
-
-/* deck view panel */
-#deckView{ display:none; }
-</style>
+<title>Gioco di Carte Personalizzato</title>
+<link rel="stylesheet" href="css/style.css">
 </head>
 
 <body>
 <div class="container" id="appRoot">
 
-<h2>Custom Image Card Game</h2>
+  <!-- Schermata iniziale -->
+  <div id="startScreen" class="zone">
+    <h2>Benvenuto al Gioco di Carte</h2>
+    <button onclick="startNewGame()">Nuova Partita</button>
+    <button onclick="loadGame()">Carica Partita</button>
+  </div>
 
-<div class="zone">
-  <button onclick="shuffleDeck()">Shuffle Deck</button>
-  <button onclick="drawCard()">Draw</button>
-  <button onclick="putSelectedBottom()">Put Selected to Bottom</button>
-  <button onclick="toggleDeckView()">Show / Hide Deck</button>
-  <button id="fullscreenBtn" onclick="toggleFullScreen()">Full Screen</button>
-</div>
+  <!-- Schermata gioco -->
+  <div id="gameScreen" style="display:none;">
 
-<div class="zone">
-  Deck size: <span id="deckSize"></span>
-</div>
+    <div class="zone">
+      <button onclick="shuffleDeck()">Mischia Mazzo</button>
+      <button onclick="drawCard()">Pesca Carta</button>
+      <button onclick="putSelectedBottom()">Metti Carte Selezionate in Fondo</button>
+      <button onclick="toggleDeckView()">Mostra / Nascondi Mazzo</button>
+      <button id="fullscreenBtn" onclick="toggleFullScreen()">Schermo Intero</button>
+      <button onclick="saveGame()">Salva Partita</button>
+    </div>
 
-<h3>Hand</h3>
-<div id="hand" class="cards"></div>
+    <div class="zone">
+      Carte nel mazzo: <span id="deckSize"></span>
+    </div>
 
-<h3>Table (5 per row)</h3>
-<button onclick="placeSelectedOnTable()">Place Hand → Table</button>
-<button onclick="returnSelectedFromTable()">Return Table → Hand</button>
-<div id="table" class="cards"></div>
+    <h3>Mano</h3>
+    <div id="hand" class="cards"></div>
 
-<div id="deckView" class="zone">
-  <h3>Deck View (faces)</h3>
-  <button onclick="moveDeckSelectedToHand()">Deck → Hand</button>
-  <div id="deckCards" class="cards"></div>
-</div>
+    <h3>Tavolo (5 per riga)</h3>
+    <button onclick="placeSelectedOnTable()">Mano → Tavolo</button>
+    <button onclick="returnSelectedFromTable()">Tavolo → Mano</button>
+    <div id="table" class="cards"></div>
 
-<!-- zoom -->
-<div id="zoomOverlay" onclick="closeZoom()">
-  <img id="zoomImg">
-</div>
+    <div id="deckView" class="zone">
+      <h3>Visualizza Mazzo</h3>
+      <button onclick="moveDeckSelectedToHand()">Mazzo → Mano</button>
+      <div id="deckCards" class="cards"></div>
+    </div>
 
-<script>
-/***************
- CARD IMAGES
-***************/
-const cardImages = [
-   {front:"cards/foraterra.png", back:"cards/back.png"},
-  {front:"cards/codafrusta.png", back:"cards/back.png"},
-  {front:"cards/longipede.png", back:"cards/back.png"},
-  {front:"cards/manticerio.png", back:"cards/back.png"},
-  {front:"cards/rovistatore.png", back:"cards/back.png"},
-  {front:"cards/spazzino.png", back:"cards/back.png"},
-  {front:"cards/vedetta_occhio_rosso.png", back:"cards/back.png"},
-  {front:"cards/squarciavento_alfa.png", back:"cards/back.png"},
-];
+    <!-- zoom -->
+    <div id="zoomOverlay" onclick="closeZoom()">
+      <img id="zoomImg">
+    </div>
 
-/***************
- PRELOAD IMAGES
-***************/
-function preloadImages(){
-  cardImages.forEach(c=>{
-    const f=new Image(); f.src=c.front;
-    const b=new Image(); b.src=c.back;
-  });
-}
-preloadImages();
-
-/***************
- GAME STATE
-***************/
-let deck=[...cardImages];
-let hand=[];
-let table=[];
-let selectedHand=[];
-let selectedTable=[];
-let selectedDeck=[];
-
-/***************
- UTILS
-***************/
-function shuffle(array){
-  for(let i=array.length-1;i>0;i--){
-    const j=Math.floor(Math.random()*(i+1));
-    [array[i],array[j]]=[array[j],array[i]];
-  }
-}
-
-function updateDeckSize(){
-  document.getElementById("deckSize").innerText=deck.length;
-}
-
-/***************
- CORE ACTIONS
-***************/
-function shuffleDeck(){
-  shuffle(deck);
-  render();
-}
-
-function drawCard(){
-  if(!deck.length)return;
-  hand.push(deck.shift());
-  render();
-}
-
-function toggleDeckView(){
-  const v=document.getElementById("deckView");
-  v.style.display=v.style.display==="none"?"block":"none";
-  render();
-}
-
-function toggleSelect(card,list){
-  const i=list.indexOf(card);
-  if(i===-1)list.push(card);
-  else list.splice(i,1);
-}
-
-/***************
- MOVE LOGIC
-***************/
-function putSelectedBottom(){
-  selectedHand.forEach(c=>{
-    let i=hand.indexOf(c);
-    if(i!==-1){hand.splice(i,1);deck.push(c);}
-  });
-  selectedHand=[];
-  render();
-}
-
-function placeSelectedOnTable(){
-  selectedHand.forEach(c=>{
-    if(table.length<5){
-      let i=hand.indexOf(c);
-      if(i!==-1){hand.splice(i,1);table.push(c);}
-    }
-  });
-  selectedHand=[];
-  render();
-}
-
-function returnSelectedFromTable(){
-  selectedTable.forEach(c=>{
-    let i=table.indexOf(c);
-    if(i!==-1){table.splice(i,1);hand.push(c);}
-  });
-  selectedTable=[];
-  render();
-}
-
-function moveDeckSelectedToHand(){
-  selectedDeck.forEach(c=>{
-    let i=deck.indexOf(c);
-    if(i!==-1){deck.splice(i,1);hand.push(c);}
-  });
-  selectedDeck=[];
-  render();
-}
-
-/***************
- DOUBLE-TAP CARD ZOOM
-***************/
-let lastTap=0;
-
-function cardTapped(card,imgSrc){
-  const now=Date.now();
-  if(now-lastTap<300){
-    openZoom(imgSrc);
-  }
-  lastTap=now;
-}
-
-/***************
- FULLSCREEN
-***************/
-function toggleFullScreen(){
-  if(!document.fullscreenElement){
-    document.documentElement.requestFullscreen().catch(()=>{});
-    document.getElementById("fullscreenBtn").innerText="Exit Full Screen";
-  } else {
-    document.exitFullscreen();
-    document.getElementById("fullscreenBtn").innerText="Full Screen";
-  }
-}
-
-/***************
- ZOOM
-***************/
-function openZoom(src){
-  document.getElementById("zoomImg").src=src;
-  document.getElementById("zoomOverlay").style.display="flex";
-}
-function closeZoom(){
-  document.getElementById("zoomOverlay").style.display="none";
-}
-
-/***************
- RENDER HELPERS
-***************/
-function makeCardElement(card,selectedList){
-  const div=document.createElement("div");
-  div.className="card"+(selectedList.includes(card)?" selected":"");
-
-  const img=document.createElement("img");
-  img.src=card.front;
-  div.appendChild(img);
-
-  div.onclick=()=>{
-    toggleSelect(card,selectedList);
-    cardTapped(card,card.front);
-    render();
-  };
-  return div;
-}
-
-function makeBackCardElement(card,selectedList){
-  const div=document.createElement("div");
-  div.className="card"+(selectedList.includes(card)?" selected":"");
-
-  const img=document.createElement("img");
-  img.src=card.back;
-  div.appendChild(img);
-
-  div.onclick=()=>{
-    toggleSelect(card,selectedList);
-    cardTapped(card,card.back);
-    render();
-  };
-  return div;
-}
-
-/***************
- RENDER AREAS
-***************/
-function render(){
-  updateDeckSize();
-
-  // hand
-  const h=document.getElementById("hand");
-  h.innerHTML="";
-  hand.forEach(c=>h.appendChild(makeCardElement(c,selectedHand)));
-
-  // table
-  const t=document.getElementById("table");
-  t.innerHTML="";
-  table.forEach(c=>t.appendChild(makeCardElement(c,selectedTable)));
-
-  // deck view — show faces
-  const d=document.getElementById("deckCards");
-  d.innerHTML="";
-  deck.forEach(c=>d.appendChild(makeCardElement(c,selectedDeck)));
-}
-
-/***************
- INIT
-***************/
-shuffle(deck);
-render();
-</script>
+  </div>
 
 </div>
+
+<script src="js/game.js"></script>
 </body>
 </html>
