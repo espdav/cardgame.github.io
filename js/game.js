@@ -34,7 +34,7 @@ let selectedTable = [];
 let selectedDeck = [];
 
 /***************
- DOUBLE-TAP ZOOM
+ DOUBLE-TAP
 ***************/
 let lastTap = 0;
 function cardTapped(card,imgSrc){
@@ -86,7 +86,7 @@ function updateDeckSize(){
 }
 
 /***************
- START / LOAD / SAVE
+ START / LOAD
 ***************/
 function startNewGame(){
   deck = [...cardImages];
@@ -102,25 +102,39 @@ function startNewGame(){
   document.getElementById('gameScreen').style.display = 'block';
 }
 
+/***************
+ SAVE GAME
+***************/
 function saveGame(){
   let savedGames = JSON.parse(localStorage.getItem('savedGames')||'{}');
   const id = Date.now();
   const timestamp = new Date();
   const title = `Salvataggio manuale - ${timestamp.toLocaleString()}`;
 
+  // salviamo solo gli indici delle carte
+  const savedDeck = deck.map(c => cardImages.indexOf(c));
+  const savedHand = hand.map(c => cardImages.indexOf(c));
+  const savedTable = table.map(c => cardImages.indexOf(c));
+  const savedSelectedHand = selectedHand.map(c => cardImages.indexOf(c));
+  const savedSelectedTable = selectedTable.map(c => cardImages.indexOf(c));
+
   savedGames[id] = {
     title,
-    deck,
-    hand,
-    table,
-    selectedHand,
-    selectedTable,
+    deck: savedDeck,
+    hand: savedHand,
+    table: savedTable,
+    selectedHand: savedSelectedHand,
+    selectedTable: savedSelectedTable,
     timestamp: timestamp.toISOString()
   };
+
   localStorage.setItem('savedGames', JSON.stringify(savedGames));
   alert('Partita salvata con successo!');
 }
 
+/***************
+ LOAD GAME LIST
+***************/
 function loadGame(){
   const savedGames = JSON.parse(localStorage.getItem('savedGames')||'{}');
   const listDiv = document.getElementById('savedGamesList');
@@ -143,15 +157,15 @@ function loadGame(){
     row.style.marginBottom = '6px';
     row.style.gap = '6px';
 
-    // Bottone Carica
     const loadBtn = document.createElement('button');
     loadBtn.innerText = game.title;
     loadBtn.onclick = ()=>{
-      deck = game.deck;
-      hand = game.hand;
-      table = game.table;
-      selectedHand = game.selectedHand;
-      selectedTable = game.selectedTable;
+      // ricostruisci gli oggetti dalle posizioni
+      deck = game.deck.map(i => cardImages[i]);
+      hand = game.hand.map(i => cardImages[i]);
+      table = game.table.map(i => cardImages[i]);
+      selectedHand = game.selectedHand.map(i => cardImages[i]);
+      selectedTable = game.selectedTable.map(i => cardImages[i]);
       selectedDeck = [];
       render();
 
@@ -159,7 +173,6 @@ function loadGame(){
       document.getElementById('gameScreen').style.display='block';
     };
 
-    // Bottone Elimina
     const deleteBtn = document.createElement('button');
     deleteBtn.innerText = 'Elimina';
     deleteBtn.style.backgroundColor = '#c00';
@@ -168,7 +181,7 @@ function loadGame(){
       if(confirm('Sei sicuro di voler eliminare questo salvataggio?')){
         delete savedGames[id];
         localStorage.setItem('savedGames', JSON.stringify(savedGames));
-        loadGame(); // aggiorna lista
+        loadGame(); // aggiorna la lista
       }
     };
 
@@ -193,11 +206,13 @@ function shuffleDeck(){
   shuffle(deck);
   render();
 }
+
 function drawCard(){
   if(!deck.length) return;
   hand.push(deck.shift());
   render();
 }
+
 function putSelectedBottom(){
   selectedHand.forEach(c=>{
     const i = hand.indexOf(c);
@@ -206,6 +221,7 @@ function putSelectedBottom(){
   selectedHand = [];
   render();
 }
+
 function placeSelectedOnTable(){
   selectedHand.forEach(c=>{
     if(table.length<5){
@@ -216,6 +232,7 @@ function placeSelectedOnTable(){
   selectedHand = [];
   render();
 }
+
 function returnSelectedFromTable(){
   selectedTable.forEach(c=>{
     const i = table.indexOf(c);
@@ -224,11 +241,13 @@ function returnSelectedFromTable(){
   selectedTable = [];
   render();
 }
+
 function toggleDeckView(){
   const v = document.getElementById('deckView');
   v.style.display = v.style.display==="none"?"block":"none";
   render();
 }
+
 function moveDeckSelectedToHand(){
   selectedDeck.forEach(c=>{
     const i = deck.indexOf(c);
