@@ -1,3 +1,4 @@
+<script>
 /***************
  CARD IMAGES
 ***************/
@@ -17,8 +18,8 @@ const cardImages = [
 ***************/
 function preloadImages(){
   cardImages.forEach(c=>{
-    const f=new Image(); f.src=c.front;
-    const b=new Image(); b.src=c.back;
+    new Image().src = c.front;
+    new Image().src = c.back;
   });
 }
 preloadImages();
@@ -26,82 +27,21 @@ preloadImages();
 /***************
  GAME STATE
 ***************/
-let deck=[], hand=[], table=[];
-let selectedHand=[], selectedTable=[], selectedDeck=[];
+let deck = [];
+let hand = [];
+let table = [];
+let selectedHand = [];
+let selectedTable = [];
+let selectedDeck = [];
 
 /***************
- START / LOAD / SAVE
+ DOUBLE-TAP
 ***************/
-function startNewGame(){
-  deck=[...cardImages];
-  shuffle(deck);
-  hand=[]; table=[];
-  selectedHand=[]; selectedTable=[]; selectedDeck=[];
-  render();
-  document.getElementById('startScreen').style.display='none';
-  document.getElementById('gameScreen').style.display='block';
-}
-
-function saveGame(){
-  const state = { deck, hand, table, selectedHand, selectedTable };
-  localStorage.setItem('savedGame', JSON.stringify(state));
-  alert('Partita salvata!');
-}
-
-function loadGame(){
-  const saved = localStorage.getItem('savedGame');
-  if(saved){
-    const state = JSON.parse(saved);
-    deck=state.deck; hand=state.hand; table=state.table;
-    selectedHand=state.selectedHand; selectedTable=state.selectedTable;
-    render();
-    document.getElementById('startScreen').style.display='none';
-    document.getElementById('gameScreen').style.display='block';
-  } else {
-    alert('Nessuna partita salvata.');
-  }
-}
-
-/***************
- UTILS
-***************/
-function shuffle(array){
-  for(let i=array.length-1;i>0;i--){
-    const j=Math.floor(Math.random()*(i+1));
-    [array[i],array[j]]=[array[j],array[i]];
-  }
-}
-
-function updateDeckSize(){
-  document.getElementById("deckSize").innerText=deck.length;
-}
-
-function toggleSelect(card,list){
-  const i=list.indexOf(card);
-  if(i===-1) list.push(card);
-  else list.splice(i,1);
-}
-
-/***************
- CORE ACTIONS
-***************/
-function shuffleDeck(){ shuffle(deck); render(); }
-function drawCard(){ if(!deck.length) return; hand.push(deck.shift()); render(); }
-function toggleDeckView(){ const v=document.getElementById("deckView"); v.style.display=v.style.display==="none"?"block":"none"; render(); }
-
-function putSelectedBottom(){ selectedHand.forEach(c=>{ let i=hand.indexOf(c); if(i!==-1){hand.splice(i,1);deck.push(c);} }); selectedHand=[]; render(); }
-function placeSelectedOnTable(){ selectedHand.forEach(c=>{ if(table.length<5){ let i=hand.indexOf(c); if(i!==-1){hand.splice(i,1);table.push(c);} } }); selectedHand=[]; render(); }
-function returnSelectedFromTable(){ selectedTable.forEach(c=>{ let i=table.indexOf(c); if(i!==-1){table.splice(i,1);hand.push(c);} }); selectedTable=[]; render(); }
-function moveDeckSelectedToHand(){ selectedDeck.forEach(c=>{ let i=deck.indexOf(c); if(i!==-1){deck.splice(i,1);hand.push(c);} }); selectedDeck=[]; render(); }
-
-/***************
- DOUBLE-TAP CARD ZOOM
-***************/
-let lastTap=0;
+let lastTap = 0;
 function cardTapped(card,imgSrc){
-  const now=Date.now();
-  if(now-lastTap<300){ openZoom(imgSrc); }
-  lastTap=now;
+  const now = Date.now();
+  if(now - lastTap < 300) openZoom(imgSrc);
+  lastTap = now;
 }
 
 /***************
@@ -110,10 +50,10 @@ function cardTapped(card,imgSrc){
 function toggleFullScreen(){
   if(!document.fullscreenElement){
     document.documentElement.requestFullscreen().catch(()=>{});
-    document.getElementById("fullscreenBtn").innerText="Esci Schermo Intero";
+    document.getElementById("fullscreenBtn").innerText="Esci Full Screen";
   } else {
     document.exitFullscreen();
-    document.getElementById("fullscreenBtn").innerText="Schermo Intero";
+    document.getElementById("fullscreenBtn").innerText="Full Screen";
   }
 }
 
@@ -121,20 +61,171 @@ function toggleFullScreen(){
  ZOOM
 ***************/
 function openZoom(src){
-  document.getElementById("zoomImg").src=src;
-  document.getElementById("zoomOverlay").style.display="flex";
+  document.getElementById("zoomImg").src = src;
+  document.getElementById("zoomOverlay").style.display = "flex";
 }
-function closeZoom(){ document.getElementById("zoomOverlay").style.display="none"; }
+function closeZoom(){
+  document.getElementById("zoomOverlay").style.display = "none";
+}
+
+/***************
+ UTILITIES
+***************/
+function shuffle(array){
+  for(let i=array.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [array[i],array[j]]=[array[j],array[i]];
+  }
+}
+function toggleSelect(card,list){
+  const i=list.indexOf(card);
+  if(i===-1) list.push(card);
+  else list.splice(i,1);
+}
+function updateDeckSize(){
+  document.getElementById("deckSize").innerText = deck.length;
+}
+
+/***************
+ START / LOAD
+***************/
+function startNewGame(){
+  deck = [...cardImages];
+  hand = [];
+  table = [];
+  selectedHand = [];
+  selectedTable = [];
+  selectedDeck = [];
+  shuffle(deck);
+  render();
+
+  document.getElementById('startScreen').style.display = 'none';
+  document.getElementById('gameScreen').style.display = 'block';
+}
+
+function loadGame(){
+  const savedGames = JSON.parse(localStorage.getItem('savedGames')||'{}');
+  const listDiv = document.getElementById('savedGamesList');
+  listDiv.innerHTML = '';
+
+  if(Object.keys(savedGames).length === 0){
+    alert('Nessuna partita salvata.');
+    return;
+  }
+
+  for(const id in savedGames){
+    const game = savedGames[id];
+    const btn = document.createElement('button');
+    const date = new Date(game.timestamp);
+    btn.innerText = date.toLocaleString();
+    btn.onclick = () => {
+      deck = game.deck;
+      hand = game.hand;
+      table = game.table;
+      selectedHand = game.selectedHand;
+      selectedTable = game.selectedTable;
+      selectedDeck = [];
+      render();
+
+      document.getElementById('loadScreen').style.display='none';
+      document.getElementById('gameScreen').style.display='block';
+    };
+    listDiv.appendChild(btn);
+  }
+
+  document.getElementById('startScreen').style.display='none';
+  document.getElementById('loadScreen').style.display='block';
+}
+
+function backToStart(){
+  document.getElementById('loadScreen').style.display='none';
+  document.getElementById('startScreen').style.display='block';
+}
+
+/***************
+ SAVE GAME
+***************/
+function saveGame(){
+  let savedGames = JSON.parse(localStorage.getItem('savedGames')||'{}');
+  const id = Date.now();
+  savedGames[id] = {
+    deck, hand, table, selectedHand, selectedTable,
+    timestamp: new Date().toISOString()
+  };
+  localStorage.setItem('savedGames', JSON.stringify(savedGames));
+  alert('Partita salvata con successo!');
+}
+
+/***************
+ GAME ACTIONS
+***************/
+function shuffleDeck(){
+  shuffle(deck);
+  render();
+}
+
+function drawCard(){
+  if(!deck.length) return;
+  hand.push(deck.shift());
+  render();
+}
+
+function putSelectedBottom(){
+  selectedHand.forEach(c=>{
+    const i = hand.indexOf(c);
+    if(i!==-1){ hand.splice(i,1); deck.push(c); }
+  });
+  selectedHand = [];
+  render();
+}
+
+function placeSelectedOnTable(){
+  selectedHand.forEach(c=>{
+    if(table.length<5){
+      const i = hand.indexOf(c);
+      if(i!==-1){ hand.splice(i,1); table.push(c); }
+    }
+  });
+  selectedHand = [];
+  render();
+}
+
+function returnSelectedFromTable(){
+  selectedTable.forEach(c=>{
+    const i = table.indexOf(c);
+    if(i!==-1){ table.splice(i,1); hand.push(c); }
+  });
+  selectedTable = [];
+  render();
+}
+
+function toggleDeckView(){
+  const v = document.getElementById('deckView');
+  v.style.display = v.style.display==="none"?"block":"none";
+  render();
+}
+
+function moveDeckSelectedToHand(){
+  selectedDeck.forEach(c=>{
+    const i = deck.indexOf(c);
+    if(i!==-1){ deck.splice(i,1); hand.push(c); }
+  });
+  selectedDeck=[];
+  render();
+}
 
 /***************
  RENDER HELPERS
 ***************/
 function makeCardElement(card,selectedList){
-  const div=document.createElement("div");
-  div.className="card"+(selectedList.includes(card)?" selected":"");
-  const img=document.createElement("img");
-  img.src=card.front; div.appendChild(img);
-  div.onclick=()=>{
+  const div = document.createElement("div");
+  div.className = "card" + (selectedList.includes(card)?" selected":"");
+
+  const img = document.createElement("img");
+  img.src = card.front;
+  div.appendChild(img);
+
+  div.onclick = ()=>{
     toggleSelect(card,selectedList);
     cardTapped(card,card.front);
     render();
@@ -142,15 +233,28 @@ function makeCardElement(card,selectedList){
   return div;
 }
 
+/***************
+ RENDER ALL AREAS
+***************/
 function render(){
   updateDeckSize();
-  const h=document.getElementById("hand"); h.innerHTML=""; hand.forEach(c=>h.appendChild(makeCardElement(c,selectedHand)));
-  const t=document.getElementById("table"); t.innerHTML=""; table.forEach(c=>t.appendChild(makeCardElement(c,selectedTable)));
-  const d=document.getElementById("deckCards"); d.innerHTML=""; deck.forEach(c=>d.appendChild(makeCardElement(c,selectedDeck)));
+
+  const h = document.getElementById("hand");
+  h.innerHTML = "";
+  hand.forEach(c=>h.appendChild(makeCardElement(c,selectedHand)));
+
+  const t = document.getElementById("table");
+  t.innerHTML = "";
+  table.forEach(c=>t.appendChild(makeCardElement(c,selectedTable)));
+
+  const d = document.getElementById("deckCards");
+  d.innerHTML = "";
+  deck.forEach(c=>d.appendChild(makeCardElement(c,selectedDeck)));
 }
 
 /***************
  INIT
 ***************/
-deck=[...cardImages];
-shuffle(deck);
+document.getElementById('gameScreen').style.display='none';
+document.getElementById('loadScreen').style.display='none';
+</script>
