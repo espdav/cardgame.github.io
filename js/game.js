@@ -34,7 +34,7 @@ let selectedTable = [];
 let selectedDeck = [];
 
 /***************
- DOUBLE-TAP
+ DOUBLE-TAP ZOOM
 ***************/
 let lastTap = 0;
 function cardTapped(card,imgSrc){
@@ -103,7 +103,7 @@ function startNewGame(){
 }
 
 function loadGame(){
-  const savedGames = JSON.parse(localStorage.getItem('savedGames') || '{}');
+  const savedGames = JSON.parse(localStorage.getItem('savedGames')||'{}');
   const listDiv = document.getElementById('savedGamesList');
   listDiv.innerHTML = '';
 
@@ -113,8 +113,7 @@ function loadGame(){
     return;
   }
 
-  // mostra prima i più recenti
-  keys.sort((a,b) => b - a);
+  keys.sort((a,b) => b - a); // più recenti prima
 
   keys.forEach(id => {
     const game = savedGames[id];
@@ -126,7 +125,7 @@ function loadGame(){
     row.style.gap = '6px';
 
     const loadBtn = document.createElement('button');
-    loadBtn.innerText = game.title || `Salvataggio - ${new Date(game.timestamp).toLocaleString()}`;
+    loadBtn.innerText = game.title || "Salvataggio senza titolo";
     loadBtn.onclick = () => {
       deck = game.deck;
       hand = game.hand;
@@ -148,7 +147,7 @@ function loadGame(){
       if(confirm('Sei sicuro di voler eliminare questo salvataggio?')){
         delete savedGames[id];
         localStorage.setItem('savedGames', JSON.stringify(savedGames));
-        loadGame(); // aggiorna lista
+        loadGame();
       }
     };
 
@@ -163,6 +162,7 @@ function loadGame(){
 
 function backToStart(){
   document.getElementById('loadScreen').style.display='none';
+  document.getElementById('gameScreen').style.display='none';
   document.getElementById('startScreen').style.display='block';
 }
 
@@ -190,7 +190,7 @@ function saveGame(){
 }
 
 /***************
- EXIT POPUP
+ EXIT GAME POPUP
 ***************/
 function exitGame(){
   document.getElementById('exitPopup').style.display = 'flex';
@@ -203,25 +203,16 @@ function closeExitPopup(){
 function saveAndExit(){
   saveGame();
   exitToStart();
-  closeExitPopup();
 }
 
 function exitWithoutSaving(){
   exitToStart();
-  closeExitPopup();
 }
 
 function exitToStart(){
-  deck = [];
-  hand = [];
-  table = [];
-  selectedHand = [];
-  selectedTable = [];
-  selectedDeck = [];
-
-  document.getElementById('gameScreen').style.display='none';
-  document.getElementById('loadScreen').style.display='none';
-  document.getElementById('startScreen').style.display='block';
+  document.getElementById('gameScreen').style.display = 'none';
+  closeExitPopup();
+  document.getElementById('startScreen').style.display = 'block';
 }
 
 /***************
@@ -261,7 +252,7 @@ function placeSelectedOnTable(){
 function returnSelectedFromTable(){
   selectedTable.forEach(c=>{
     const i = table.indexOf(c);
-    if(i!==-1){ table.splice(i,1); hand.push(c); }
+    if(i!==-1){ table.splice(i,1); hand.push(c);}
   });
   selectedTable = [];
   render();
@@ -302,7 +293,7 @@ function makeCardElement(card,selectedList){
 }
 
 /***************
- RENDER ALL AREAS
+ RENDER ALL AREE
 ***************/
 function render(){
   updateDeckSize();
@@ -325,3 +316,4 @@ function render(){
 ***************/
 document.getElementById('gameScreen').style.display='none';
 document.getElementById('loadScreen').style.display='none';
+document.getElementById('exitPopup').style.display='none';
