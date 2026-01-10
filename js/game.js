@@ -1,4 +1,3 @@
-<script>
 /***************
  CARD IMAGES
 ***************/
@@ -257,4 +256,4 @@ function render(){
 ***************/
 document.getElementById('gameScreen').style.display='none';
 document.getElementById('loadScreen').style.display='none';
-</script>
+
