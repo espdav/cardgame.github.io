@@ -93,7 +93,7 @@ body{
   <button onclick="drawCard()">Draw</button>
   <button onclick="putSelectedBottom()">Put Selected to Bottom</button>
   <button onclick="toggleDeckView()">Show / Hide Deck</button>
-  <button onclick="toggleFullScreen()">Full Screen</button>
+  <button id="fullscreenBtn" onclick="toggleFullScreen()">Full Screen</button>
 </div>
 
 <div class="zone">
@@ -124,7 +124,7 @@ body{
  CARD IMAGES
 ***************/
 const cardImages = [
-  {front:"cards/foraterra.png", back:"cards/back.png"},
+   {front:"cards/foraterra.png", back:"cards/back.png"},
   {front:"cards/codafrusta.png", back:"cards/back.png"},
   {front:"cards/longipede.png", back:"cards/back.png"},
   {front:"cards/manticerio.png", back:"cards/back.png"},
@@ -237,7 +237,7 @@ function moveDeckSelectedToHand(){
 }
 
 /***************
- DOUBLE-TAP BEHAVIOR
+ DOUBLE-TAP CARD ZOOM
 ***************/
 let lastTap=0;
 
@@ -249,25 +249,16 @@ function cardTapped(card,imgSrc){
   lastTap=now;
 }
 
-/* double-tap background to exit fullscreen */
-function backgroundDoubleTapExit(){
-  const now=Date.now();
-  if(now-lastTap<300){
-    if(document.fullscreenElement){
-      document.exitFullscreen();
-    }
-  }
-  lastTap=now;
-}
-
 /***************
  FULLSCREEN
 ***************/
 function toggleFullScreen(){
   if(!document.fullscreenElement){
     document.documentElement.requestFullscreen().catch(()=>{});
+    document.getElementById("fullscreenBtn").innerText="Exit Full Screen";
   } else {
     document.exitFullscreen();
+    document.getElementById("fullscreenBtn").innerText="Full Screen";
   }
 }
 
@@ -333,7 +324,7 @@ function render(){
   t.innerHTML="";
   table.forEach(c=>t.appendChild(makeCardElement(c,selectedTable)));
 
-  // deck view — now showing **faces**
+  // deck view — show faces
   const d=document.getElementById("deckCards");
   d.innerHTML="";
   deck.forEach(c=>d.appendChild(makeCardElement(c,selectedDeck)));
@@ -344,9 +335,6 @@ function render(){
 ***************/
 shuffle(deck);
 render();
-
-/* register double-tap background exit */
-document.body.addEventListener("click", backgroundDoubleTapExit);
 </script>
 
 </div>
