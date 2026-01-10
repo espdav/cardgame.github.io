@@ -145,14 +145,95 @@ function backToStart(){
  SAVE GAME
 ***************/
 function saveGame(){
-  let savedGames = JSON.parse(localStorage.getItem('savedGames')||'{}');
+  let savedGames = JSON.parse(localStorage.getItem('savedGames') || '{}');
   const id = Date.now();
+  const timestamp = new Date();
+  const title = `Salvataggio manuale - ${timestamp.toLocaleString()}`;
+
   savedGames[id] = {
-    deck, hand, table, selectedHand, selectedTable,
-    timestamp: new Date().toISOString()
+    title,
+    deck,
+    hand,
+    table,
+    selectedHand,
+    selectedTable,
+    timestamp: timestamp.toISOString()
   };
+
   localStorage.setItem('savedGames', JSON.stringify(savedGames));
   alert('Partita salvata con successo!');
+}
+
+/***************
+ LOAD GAME
+***************/
+function loadGame(){
+  const savedGames = JSON.parse(localStorage.getItem('savedGames') || '{}');
+  const listDiv = document.getElementById('savedGamesList');
+  listDiv.innerHTML = '';
+
+  const keys = Object.keys(savedGames);
+  if(keys.length === 0){
+    alert('Nessuna partita salvata.');
+    return;
+  }
+
+  keys.sort((a,b) => b - a); // mostra prima i più recenti
+
+  keys.forEach(id => {
+    const game = savedGames[id];
+
+    // div container per la riga
+    const row = document.createElement('div');
+    row.style.display = 'flex';
+    row.style.alignItems = 'center';
+    row.style.marginBottom = '6px';
+    row.style.gap = '6px';
+
+    // bottone per caricare
+    const loadBtn = document.createElement('button');
+    loadBtn.innerText = game.title;
+    loadBtn.onclick = () => {
+      deck = game.deck;
+      hand = game.hand;
+      table = game.table;
+      selectedHand = game.selectedHand;
+      selectedTable = game.selectedTable;
+      selectedDeck = [];
+      render();
+
+      document.getElementById('loadScreen').style.display = 'none';
+      document.getElementById('gameScreen').style.display = 'block';
+    };
+
+    // bottone per eliminare
+    const deleteBtn = document.createElement('button');
+    deleteBtn.innerText = 'Elimina';
+    deleteBtn.style.backgroundColor = '#c00';
+    deleteBtn.style.color = 'white';
+    deleteBtn.onclick = () => {
+      if(confirm('Sei sicuro di voler eliminare questo salvataggio?')){
+        delete savedGames[id];
+        localStorage.setItem('savedGames', JSON.stringify(savedGames));
+        loadGame(); // aggiorna la lista
+      }
+    };
+
+    row.appendChild(loadBtn);
+    row.appendChild(deleteBtn);
+    listDiv.appendChild(row);
+  });
+
+  document.getElementById('startScreen').style.display='none';
+  document.getElementById('loadScreen').style.display='block';
+}
+
+/***************
+ BACK TO START
+***************/
+function backToStart(){
+  document.getElementById('loadScreen').style.display='none';
+  document.getElementById('startScreen').style.display='block';
 }
 
 /***************
