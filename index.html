@@ -27,7 +27,7 @@ body{
   gap:10px;
 }
 
-/* exactly 5 cards on table row */
+/* exactly 5 cards per row on table */
 #table.cards{
   grid-template-columns:repeat(5,225px);
   justify-content:center;
@@ -47,14 +47,13 @@ body{
   user-select:none;
 }
 
-/* fit image without stretch */
+/* fit PNG without stretching */
 .card img{
   width:100%;
   height:100%;
   object-fit:contain;
 }
 
-/* selected state */
 .card.selected{
   outline:4px solid gold;
 }
@@ -85,19 +84,20 @@ body{
 </head>
 
 <body>
-<div class="container">
+<div class="container" id="appRoot">
 
 <h2>Custom Image Card Game</h2>
 
 <div class="zone">
-<button onclick="shuffleDeck()">Shuffle Deck</button>
-<button onclick="drawCard()">Draw</button>
-<button onclick="putSelectedBottom()">Put Selected to Bottom</button>
-<button onclick="toggleDeckView()">Show / Hide Deck</button>
+  <button onclick="shuffleDeck()">Shuffle Deck</button>
+  <button onclick="drawCard()">Draw</button>
+  <button onclick="putSelectedBottom()">Put Selected to Bottom</button>
+  <button onclick="toggleDeckView()">Show / Hide Deck</button>
+  <button onclick="toggleFullScreen()">Full Screen</button>
 </div>
 
 <div class="zone">
-Deck size: <span id="deckSize"></span>
+  Deck size: <span id="deckSize"></span>
 </div>
 
 <h3>Hand</h3>
@@ -109,9 +109,9 @@ Deck size: <span id="deckSize"></span>
 <div id="table" class="cards"></div>
 
 <div id="deckView" class="zone">
-<h3>Deck View</h3>
-<button onclick="moveDeckSelectedToHand()">Deck → Hand</button>
-<div id="deckCards" class="cards"></div>
+  <h3>Deck View (faces)</h3>
+  <button onclick="moveDeckSelectedToHand()">Deck → Hand</button>
+  <div id="deckCards" class="cards"></div>
 </div>
 
 <!-- zoom -->
@@ -156,7 +156,7 @@ let selectedTable=[];
 let selectedDeck=[];
 
 /***************
- UTIL
+ UTILS
 ***************/
 function shuffle(array){
   for(let i=array.length-1;i>0;i--){
@@ -237,13 +237,38 @@ function moveDeckSelectedToHand(){
 }
 
 /***************
- DOUBLE-TAP + SELECT
+ DOUBLE-TAP BEHAVIOR
 ***************/
 let lastTap=0;
+
 function cardTapped(card,imgSrc){
   const now=Date.now();
-  if(now-lastTap<300){ openZoom(imgSrc); }
+  if(now-lastTap<300){
+    openZoom(imgSrc);
+  }
   lastTap=now;
+}
+
+/* double-tap background to exit fullscreen */
+function backgroundDoubleTapExit(){
+  const now=Date.now();
+  if(now-lastTap<300){
+    if(document.fullscreenElement){
+      document.exitFullscreen();
+    }
+  }
+  lastTap=now;
+}
+
+/***************
+ FULLSCREEN
+***************/
+function toggleFullScreen(){
+  if(!document.fullscreenElement){
+    document.documentElement.requestFullscreen().catch(()=>{});
+  } else {
+    document.exitFullscreen();
+  }
 }
 
 /***************
@@ -260,7 +285,7 @@ function closeZoom(){
 /***************
  RENDER HELPERS
 ***************/
-function makeCardElement(card,selectedList,clickHandler){
+function makeCardElement(card,selectedList){
   const div=document.createElement("div");
   div.className="card"+(selectedList.includes(card)?" selected":"");
 
@@ -308,7 +333,7 @@ function render(){
   t.innerHTML="";
   table.forEach(c=>t.appendChild(makeCardElement(c,selectedTable)));
 
-  // deck view
+  // deck view — now showing **faces**
   const d=document.getElementById("deckCards");
   d.innerHTML="";
   deck.forEach(c=>d.appendChild(makeCardElement(c,selectedDeck)));
@@ -319,7 +344,11 @@ function render(){
 ***************/
 shuffle(deck);
 render();
+
+/* register double-tap background exit */
+document.body.addEventListener("click", backgroundDoubleTapExit);
 </script>
+
 </div>
 </body>
 </html>
