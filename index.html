@@ -10,11 +10,17 @@
 <div class="container" id="appRoot">
 
   <!-- Schermata iniziale -->
-  <div id="startScreen" class="zone">
-    <h2>Benvenuto al Gioco di Carte</h2>
-    <button onclick="startNewGame()">Nuova Partita</button>
-    <button onclick="loadGame()">Carica Partita</button>
-  </div>
+ <div id="startScreen" class="zone">
+  <h2>Benvenuto al Gioco di Carte</h2>
+  <button onclick="startNewGame()">Nuova Partita</button>
+  <button onclick="loadGame()">Carica Partita</button>
+</div>
+
+<div id="loadScreen" style="display:none;" class="zone">
+  <h3>Seleziona una partita da caricare</h3>
+  <div id="savedGamesList" class="cards"></div>
+  <button onclick="backToStart()">Indietro</button>
+</div>
 
   <!-- Schermata gioco -->
   <div id="gameScreen" style="display:none;">
@@ -58,3 +64,4 @@
 <script src="js/game.js"></script>
 </body>
 </html>
+
