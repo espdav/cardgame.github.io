@@ -102,41 +102,8 @@ function startNewGame(){
   document.getElementById('gameScreen').style.display = 'block';
 }
 
-/***************
- SAVE GAME
-***************/
-function saveGame(){
-  let savedGames = JSON.parse(localStorage.getItem('savedGames')||'{}');
-  const id = Date.now();
-  const timestamp = new Date();
-  const title = `Salvataggio manuale - ${timestamp.toLocaleString()}`;
-
-  // salviamo solo gli indici delle carte
-  const savedDeck = deck.map(c => cardImages.indexOf(c));
-  const savedHand = hand.map(c => cardImages.indexOf(c));
-  const savedTable = table.map(c => cardImages.indexOf(c));
-  const savedSelectedHand = selectedHand.map(c => cardImages.indexOf(c));
-  const savedSelectedTable = selectedTable.map(c => cardImages.indexOf(c));
-
-  savedGames[id] = {
-    title,
-    deck: savedDeck,
-    hand: savedHand,
-    table: savedTable,
-    selectedHand: savedSelectedHand,
-    selectedTable: savedSelectedTable,
-    timestamp: timestamp.toISOString()
-  };
-
-  localStorage.setItem('savedGames', JSON.stringify(savedGames));
-  alert('Partita salvata con successo!');
-}
-
-/***************
- LOAD GAME LIST
-***************/
 function loadGame(){
-  const savedGames = JSON.parse(localStorage.getItem('savedGames')||'{}');
+  const savedGames = JSON.parse(localStorage.getItem('savedGames') || '{}');
   const listDiv = document.getElementById('savedGamesList');
   listDiv.innerHTML = '';
 
@@ -146,9 +113,10 @@ function loadGame(){
     return;
   }
 
-  keys.sort((a,b)=>b-a); // mostra prima i più recenti
+  // mostra prima i più recenti
+  keys.sort((a,b) => b - a);
 
-  keys.forEach(id=>{
+  keys.forEach(id => {
     const game = savedGames[id];
 
     const row = document.createElement('div');
@@ -158,14 +126,13 @@ function loadGame(){
     row.style.gap = '6px';
 
     const loadBtn = document.createElement('button');
-    loadBtn.innerText = game.title;
-    loadBtn.onclick = ()=>{
-      // ricostruisci gli oggetti dalle posizioni
-      deck = game.deck.map(i => cardImages[i]);
-      hand = game.hand.map(i => cardImages[i]);
-      table = game.table.map(i => cardImages[i]);
-      selectedHand = game.selectedHand.map(i => cardImages[i]);
-      selectedTable = game.selectedTable.map(i => cardImages[i]);
+    loadBtn.innerText = game.title || `Salvataggio - ${new Date(game.timestamp).toLocaleString()}`;
+    loadBtn.onclick = () => {
+      deck = game.deck;
+      hand = game.hand;
+      table = game.table;
+      selectedHand = game.selectedHand;
+      selectedTable = game.selectedTable;
       selectedDeck = [];
       render();
 
@@ -177,11 +144,11 @@ function loadGame(){
     deleteBtn.innerText = 'Elimina';
     deleteBtn.style.backgroundColor = '#c00';
     deleteBtn.style.color = 'white';
-    deleteBtn.onclick = ()=>{
+    deleteBtn.onclick = () => {
       if(confirm('Sei sicuro di voler eliminare questo salvataggio?')){
         delete savedGames[id];
         localStorage.setItem('savedGames', JSON.stringify(savedGames));
-        loadGame(); // aggiorna la lista
+        loadGame(); // aggiorna lista
       }
     };
 
@@ -195,6 +162,64 @@ function loadGame(){
 }
 
 function backToStart(){
+  document.getElementById('loadScreen').style.display='none';
+  document.getElementById('startScreen').style.display='block';
+}
+
+/***************
+ SAVE GAME
+***************/
+function saveGame(){
+  let savedGames = JSON.parse(localStorage.getItem('savedGames') || '{}');
+  const id = Date.now();
+  const timestamp = new Date();
+  const title = `Salvataggio manuale - ${timestamp.toLocaleString()}`;
+
+  savedGames[id] = {
+    title,
+    deck,
+    hand,
+    table,
+    selectedHand,
+    selectedTable,
+    timestamp: timestamp.toISOString()
+  };
+
+  localStorage.setItem('savedGames', JSON.stringify(savedGames));
+  alert('Partita salvata con successo!');
+}
+
+/***************
+ EXIT POPUP
+***************/
+function exitGame(){
+  document.getElementById('exitPopup').style.display = 'flex';
+}
+
+function closeExitPopup(){
+  document.getElementById('exitPopup').style.display = 'none';
+}
+
+function saveAndExit(){
+  saveGame();
+  exitToStart();
+  closeExitPopup();
+}
+
+function exitWithoutSaving(){
+  exitToStart();
+  closeExitPopup();
+}
+
+function exitToStart(){
+  deck = [];
+  hand = [];
+  table = [];
+  selectedHand = [];
+  selectedTable = [];
+  selectedDeck = [];
+
+  document.getElementById('gameScreen').style.display='none';
   document.getElementById('loadScreen').style.display='none';
   document.getElementById('startScreen').style.display='block';
 }
