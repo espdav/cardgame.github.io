@@ -34,7 +34,7 @@ let selectedTable = [];
 let selectedDeck = [];
 
 /***************
- DOUBLE-TAP
+ DOUBLE-TAP ZOOM
 ***************/
 let lastTap = 0;
 function cardTapped(card,imgSrc){
@@ -86,7 +86,7 @@ function updateDeckSize(){
 }
 
 /***************
- START / LOAD
+ START / LOAD / SAVE
 ***************/
 function startNewGame(){
   deck = [...cardImages];
@@ -102,50 +102,8 @@ function startNewGame(){
   document.getElementById('gameScreen').style.display = 'block';
 }
 
-function loadGame(){
-  const savedGames = JSON.parse(localStorage.getItem('savedGames')||'{}');
-  const listDiv = document.getElementById('savedGamesList');
-  listDiv.innerHTML = '';
-
-  if(Object.keys(savedGames).length === 0){
-    alert('Nessuna partita salvata.');
-    return;
-  }
-
-  for(const id in savedGames){
-    const game = savedGames[id];
-    const btn = document.createElement('button');
-    const date = new Date(game.timestamp);
-    btn.innerText = date.toLocaleString();
-    btn.onclick = () => {
-      deck = game.deck;
-      hand = game.hand;
-      table = game.table;
-      selectedHand = game.selectedHand;
-      selectedTable = game.selectedTable;
-      selectedDeck = [];
-      render();
-
-      document.getElementById('loadScreen').style.display='none';
-      document.getElementById('gameScreen').style.display='block';
-    };
-    listDiv.appendChild(btn);
-  }
-
-  document.getElementById('startScreen').style.display='none';
-  document.getElementById('loadScreen').style.display='block';
-}
-
-function backToStart(){
-  document.getElementById('loadScreen').style.display='none';
-  document.getElementById('startScreen').style.display='block';
-}
-
-/***************
- SAVE GAME
-***************/
 function saveGame(){
-  let savedGames = JSON.parse(localStorage.getItem('savedGames') || '{}');
+  let savedGames = JSON.parse(localStorage.getItem('savedGames')||'{}');
   const id = Date.now();
   const timestamp = new Date();
   const title = `Salvataggio manuale - ${timestamp.toLocaleString()}`;
@@ -159,16 +117,12 @@ function saveGame(){
     selectedTable,
     timestamp: timestamp.toISOString()
   };
-
   localStorage.setItem('savedGames', JSON.stringify(savedGames));
   alert('Partita salvata con successo!');
 }
 
-/***************
- LOAD GAME
-***************/
 function loadGame(){
-  const savedGames = JSON.parse(localStorage.getItem('savedGames') || '{}');
+  const savedGames = JSON.parse(localStorage.getItem('savedGames')||'{}');
   const listDiv = document.getElementById('savedGamesList');
   listDiv.innerHTML = '';
 
@@ -178,22 +132,21 @@ function loadGame(){
     return;
   }
 
-  keys.sort((a,b) => b - a); // mostra prima i più recenti
+  keys.sort((a,b)=>b-a); // mostra prima i più recenti
 
-  keys.forEach(id => {
+  keys.forEach(id=>{
     const game = savedGames[id];
 
-    // div container per la riga
     const row = document.createElement('div');
     row.style.display = 'flex';
     row.style.alignItems = 'center';
     row.style.marginBottom = '6px';
     row.style.gap = '6px';
 
-    // bottone per caricare
+    // Bottone Carica
     const loadBtn = document.createElement('button');
     loadBtn.innerText = game.title;
-    loadBtn.onclick = () => {
+    loadBtn.onclick = ()=>{
       deck = game.deck;
       hand = game.hand;
       table = game.table;
@@ -202,20 +155,20 @@ function loadGame(){
       selectedDeck = [];
       render();
 
-      document.getElementById('loadScreen').style.display = 'none';
-      document.getElementById('gameScreen').style.display = 'block';
+      document.getElementById('loadScreen').style.display='none';
+      document.getElementById('gameScreen').style.display='block';
     };
 
-    // bottone per eliminare
+    // Bottone Elimina
     const deleteBtn = document.createElement('button');
     deleteBtn.innerText = 'Elimina';
     deleteBtn.style.backgroundColor = '#c00';
     deleteBtn.style.color = 'white';
-    deleteBtn.onclick = () => {
+    deleteBtn.onclick = ()=>{
       if(confirm('Sei sicuro di voler eliminare questo salvataggio?')){
         delete savedGames[id];
         localStorage.setItem('savedGames', JSON.stringify(savedGames));
-        loadGame(); // aggiorna la lista
+        loadGame(); // aggiorna lista
       }
     };
 
@@ -228,9 +181,6 @@ function loadGame(){
   document.getElementById('loadScreen').style.display='block';
 }
 
-/***************
- BACK TO START
-***************/
 function backToStart(){
   document.getElementById('loadScreen').style.display='none';
   document.getElementById('startScreen').style.display='block';
@@ -243,13 +193,11 @@ function shuffleDeck(){
   shuffle(deck);
   render();
 }
-
 function drawCard(){
   if(!deck.length) return;
   hand.push(deck.shift());
   render();
 }
-
 function putSelectedBottom(){
   selectedHand.forEach(c=>{
     const i = hand.indexOf(c);
@@ -258,7 +206,6 @@ function putSelectedBottom(){
   selectedHand = [];
   render();
 }
-
 function placeSelectedOnTable(){
   selectedHand.forEach(c=>{
     if(table.length<5){
@@ -269,7 +216,6 @@ function placeSelectedOnTable(){
   selectedHand = [];
   render();
 }
-
 function returnSelectedFromTable(){
   selectedTable.forEach(c=>{
     const i = table.indexOf(c);
@@ -278,13 +224,11 @@ function returnSelectedFromTable(){
   selectedTable = [];
   render();
 }
-
 function toggleDeckView(){
   const v = document.getElementById('deckView');
   v.style.display = v.style.display==="none"?"block":"none";
   render();
 }
-
 function moveDeckSelectedToHand(){
   selectedDeck.forEach(c=>{
     const i = deck.indexOf(c);
@@ -337,4 +281,3 @@ function render(){
 ***************/
 document.getElementById('gameScreen').style.display='none';
 document.getElementById('loadScreen').style.display='none';
-
