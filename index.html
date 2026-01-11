@@ -1,23 +1,30 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Gioco di carte</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
+  <!-- SCHERMATA INIZIALE -->
   <div id="start-screen">
     <h1>Benvenuto nel gioco di carte</h1>
-    <button id="startGameBtn">Inizia partita</button>
+
+    <div class="start-buttons">
+      <button id="newGameBtn">Nuova partita</button>
+      <button id="loadGameBtn">Carica partita</button>
+    </div>
   </div>
 
+  <!-- SCHERMATA DI GIOCO -->
   <div id="game-screen" class="hidden">
 
     <header class="top-bar">
       <div class="game-title">Partita in corso</div>
 
+      <!-- MENU OPZIONI -->
       <div class="options-menu-wrapper">
         <button id="optionsBtn" class="icon-btn" aria-haspopup="true" aria-expanded="false" aria-label="Apri menu opzioni">
           ⚙️
@@ -39,7 +46,7 @@
 
   </div>
 
-  <!-- Overlay SWIPER (inizialmente nascosto) -->
+  <!-- OVERLAY SWIPER (NASCOSTO DI DEFAULT) -->
   <div id="swiperOverlay" class="overlay hidden" aria-hidden="true">
 
     <button id="closeSwiper" class="close-btn" aria-label="Chiudi vista carte">✕</button>
@@ -56,6 +63,6 @@
 
   <script src="game.js"></script>
   <script src="swiper.js"></script>
+
 </body>
 </html>
-
