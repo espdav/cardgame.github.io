@@ -46,7 +46,7 @@ button:hover { background-color: #666; }
 
 /* --- POPUP ESCI --- */
 #exitPopup {
-  display: none;  /* <-- deve partire nascosto */
+  display: none;  
   position: fixed;
   top: 0; left: 0;
   width: 100%; height: 100%;
@@ -72,11 +72,25 @@ button:hover { background-color: #666; }
   padding: 8px 12px;
   font-weight: bold;
 }
+
+/* --- RESPONSIVE TABLET 1280x800 --- */
+@media screen and (max-width: 1280px) {
+  #fullscreenBtn {
+    padding: 6px 10px;
+    font-size: 14px;
+  }
+  .cards { grid-template-columns: repeat(auto-fill, minmax(180px,1fr)); }
+  #table.cards { grid-template-columns: repeat(5,180px); }
+  .card { width:180px; height:257px; }
+}
 </style>
 </head>
 <body>
 
 <div class="container">
+
+<!-- FULLSCREEN BUTTON -->
+<button id="fullscreenBtn" onclick="toggleFullScreen()">Full Screen</button>
 
 <!-- START SCREEN -->
 <div id="startScreen" class="screen">
@@ -101,7 +115,6 @@ button:hover { background-color: #666; }
     <button onclick="drawCard()">Pesca</button>
     <button onclick="putSelectedBottom()">Metti sul fondo</button>
     <button onclick="toggleDeckView()">Mostra/Nascondi Mazzo</button>
-    <button id="fullscreenBtn" onclick="toggleFullScreen()">Full Screen</button>
     <button onclick="saveGame()">Salva Partita</button>
     <button onclick="exitGame()">Esci dalla Partita</button>
   </div>
@@ -152,5 +165,3 @@ document.getElementById('loadScreen').style.display='none';
 </div>
 </body>
 </html>
-
-
