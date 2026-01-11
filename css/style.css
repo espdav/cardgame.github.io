@@ -102,7 +102,7 @@ body {
   font-weight: bold;
 }
 
-/* --- RESPONSIVE TABLET 1280x800 --- */
+/* --- RESPONSIVE TABLET 1280x800 --- 
 @media screen and (max-width: 1280px) {
   #fullscreenBtn {
     padding: 6px 10px;
@@ -111,4 +111,4 @@ body {
   .cards { grid-template-columns: repeat(auto-fill, minmax(180px,1fr)); }
   #table.cards { grid-template-columns: repeat(5,180px); }
   .card { width:180px; height:257px; }
-}
+}*/
