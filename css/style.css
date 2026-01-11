@@ -34,14 +34,6 @@ button:hover { background-color: #666; }
   gap:10px;
 }
 
-#table.cards {
-  /*grid-template-columns:repeat(5,225px);
-  justify-content:center;*/
-  display:grid;
-  grid-template-columns:repeat(auto-fill, minmax(225px,1fr));
-  gap:10px;
-}
-
 .card {
   width:225px;
   height:321px;
@@ -119,13 +111,3 @@ button:hover { background-color: #666; }
   font-weight: bold;
 }
 
-/* --- RESPONSIVE TABLET 1280x800 --- 
-@media screen and (max-width: 1280px) {
-  #fullscreenBtn {
-    padding: 6px 10px;
-    font-size: 14px;
-  }
-  .cards { grid-template-columns: repeat(auto-fill, minmax(180px,1fr)); }
-  #table.cards { grid-template-columns: repeat(5,180px); }
-  .card { width:180px; height:257px; }
-}*/
