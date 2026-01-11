@@ -35,8 +35,11 @@ button:hover { background-color: #666; }
 }
 
 #table.cards {
-  grid-template-columns:repeat(5,225px);
-  justify-content:center;
+  /*grid-template-columns:repeat(5,225px);
+  justify-content:center;*/
+  display:grid;
+  grid-template-columns:repeat(auto-fill, minmax(225px,1fr));
+  gap:10px;
 }
 
 .card {
