@@ -1,49 +1,37 @@
 let currentIndex = 0;
 
-function initSwiper() {
+const swiperOverlay = document.getElementById("swiperOverlay");
+const swiperTrack = document.getElementById("swiperTrack");
+const closeSwiperBtn = document.getElementById("closeSwiper");
 
-  const track = document.getElementById("swiperTrack");
+document.getElementById("prevCard").addEventListener("click", () => move(-1));
+document.getElementById("nextCard").addEventListener("click", () => move(1));
+closeSwiperBtn.addEventListener("click", closeSwiper);
 
-  // prendo le carte dalla mano
-  const handCards = [...document.querySelectorAll("#hand .card")];
-
-  // pulisco
-  track.innerHTML = "";
-
-  handCards.forEach((card, index) => {
-    const clone = card.cloneNode(true);
-    clone.classList.add("swiper-card");
-
-    if (index === 0) clone.classList.add("center");
-
-    clone.addEventListener("click", () => {
-      currentIndex = index;
-      updateSwiper();
-    });
-
-    track.appendChild(clone);
-  });
-
-  document.getElementById("swiperPrev").onclick = () => {
-    currentIndex = Math.max(0, currentIndex - 1);
-    updateSwiper();
-  };
-
-  document.getElementById("swiperNext").onclick = () => {
-    currentIndex = Math.min(handCards.length - 1, currentIndex + 1);
-    updateSwiper();
-  };
-
-  updateSwiper();
+function openSwiper(index) {
+  currentIndex = index;
+  renderSwiper();
+  swiperOverlay.classList.remove("hidden");
 }
 
-function updateSwiper() {
-  const cards = [...document.querySelectorAll(".swiper-card")];
+function closeSwiper() {
+  swiperOverlay.classList.add("hidden");
+}
 
-  cards.forEach((card, index) => {
-    card.classList.remove("center");
-    if (index === currentIndex) {
-      card.classList.add("center");
-    }
+function move(dir) {
+  currentIndex = (currentIndex + dir + handCards.length) % handCards.length;
+  renderSwiper();
+}
+
+function renderSwiper() {
+  swiperTrack.innerHTML = "";
+
+  handCards.forEach((src, i) => {
+    const img = document.createElement("img");
+    img.src = src;
+    img.classList.add("card");
+    if (i === currentIndex) img.style.transform = "scale(1.2)";
+    img.addEventListener("click", () => toggleSelection(i));
+    swiperTrack.appendChild(img);
   });
 }
