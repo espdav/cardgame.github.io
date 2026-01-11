@@ -34,7 +34,7 @@ let selectedTable = [];
 let selectedDeck = [];
 
 /***************
- DOUBLE-TAP
+ DOUBLE-TAP ZOOM
 ***************/
 let lastTap = 0;
 function cardTapped(card, imgSrc) {
@@ -88,7 +88,7 @@ function updateDeckSize() {
 }
 
 /***************
- START / LOAD / EXIT
+ START / LOAD
 ***************/
 function startNewGame() {
   deck = cardImages.map(c => ({ front: c.front, back: c.back }));
@@ -116,19 +116,17 @@ function loadGame() {
     return;
   }
 
-  keys.sort((a, b) => b - a); // più recenti primi
+  keys.sort((a, b) => b - a);
 
   keys.forEach(id => {
     const game = savedGames[id];
 
-    // container riga
     const row = document.createElement('div');
     row.style.display = 'flex';
     row.style.alignItems = 'center';
     row.style.marginBottom = '6px';
     row.style.gap = '6px';
 
-    // bottone carica
     const loadBtn = document.createElement('button');
     loadBtn.innerText = game.title || new Date(game.timestamp).toLocaleString();
     loadBtn.onclick = () => {
@@ -144,7 +142,6 @@ function loadGame() {
       document.getElementById('gameScreen').style.display = 'block';
     };
 
-    // bottone elimina
     const deleteBtn = document.createElement('button');
     deleteBtn.innerText = 'Elimina';
     deleteBtn.style.backgroundColor = '#c00';
@@ -153,7 +150,7 @@ function loadGame() {
       if (confirm('Sei sicuro di voler eliminare questo salvataggio?')) {
         delete savedGames[id];
         localStorage.setItem('savedGames', JSON.stringify(savedGames));
-        loadGame(); // aggiorna la lista
+        loadGame();
       }
     };
 
@@ -167,15 +164,28 @@ function loadGame() {
   document.getElementById('loadScreen').style.display = 'block';
 }
 
+/***************
+ EXIT POPUP
+***************/
 function exitGame() {
   document.getElementById('exitPopup').style.display = 'flex';
 }
 
-function confirmExit(save = false) {
-  if (save) saveGame();
-  document.getElementById('exitPopup').style.display = 'none';
+function saveAndExit() {
+  saveGame();
+  closeExitPopup();
   document.getElementById('gameScreen').style.display = 'none';
   document.getElementById('startScreen').style.display = 'block';
+}
+
+function exitWithoutSaving() {
+  closeExitPopup();
+  document.getElementById('gameScreen').style.display = 'none';
+  document.getElementById('startScreen').style.display = 'block';
+}
+
+function closeExitPopup() {
+  document.getElementById('exitPopup').style.display = 'none';
 }
 
 /***************
