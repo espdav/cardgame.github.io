@@ -1,86 +1,60 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Gioco di Carte</title>
-<link rel="stylesheet" href="css/style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gioco di carte</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
-
 <body>
 
-<!-- MENU OPZIONI -->
-<div id="topBar">
-  <div id="gameTitle">Gioco di Carte</div>
-
-  <button id="optionsBtn" aria-label="Apri menu opzioni">⚙️</button>
-
-  <div id="optionsMenu" hidden>
-    <button id="saveBtn">💾 Salva partita</button>
-    <button id="fullscreenBtn">⛶ Full screen</button>
-    <button id="exitBtn">↩️ Esci dalla partita</button>
-  </div>
-</div>
-
-<!-- SCHERMATA INIZIALE -->
-<div id="startScreen">
-  <h1>Benvenuto nel gioco di carte</h1>
-  <button onclick="startNewGame()">Nuova partita</button>
-  <button onclick="loadGame()">Carica partita</button>
-</div>
-
-<!-- SCHERMATA CARICAMENTI -->
-<div id="loadScreen">
-  <h2>Partite salvate</h2>
-  <div id="savedGamesList"></div>
-  <button onclick="goBackToStart()">Torna al menu</button>
-</div>
-
-<!-- SCHERMATA DI GIOCO -->
-<div id="gameScreen">
-
-  <!-- TAVOLO -->
-  <div id="table" aria-label="Area di gioco tavolo"></div>
-
-  <!-- MAZZO VISIBILE -->
-  <div id="deckArea">
-    Mazzo rimanente: <span id="deckSize">0</span>
-    <button onclick="drawCard()">Pesca</button>
+  <div id="start-screen">
+    <h1>Benvenuto nel gioco di carte</h1>
+    <button id="startGameBtn">Inizia partita</button>
   </div>
 
-  <!-- MANO GIOCATORE -->
-  <div id="hand"></div>
+  <div id="game-screen" class="hidden">
 
-</div>
+    <header class="top-bar">
+      <div class="game-title">Partita in corso</div>
 
-<!-- OVERLAY SWIPER -->
-<div id="handOverlay" hidden>
-  <div id="overlayContent">
+      <div class="options-menu-wrapper">
+        <button id="optionsBtn" class="icon-btn" aria-haspopup="true" aria-expanded="false" aria-label="Apri menu opzioni">
+          ⚙️
+        </button>
 
-    <button id="closeOverlayBtn" aria-label="Chiudi visualizzazione carte">✖</button>
+        <div id="optionsMenu" class="options-menu hidden" role="menu">
+          <button id="exitGameBtn" role="menuitem">Esci dalla partita</button>
+          <button id="saveGameBtn" role="menuitem">Salva partita</button>
+          <button id="fullscreenBtn" role="menuitem">Schermo intero</button>
+        </div>
+      </div>
+    </header>
 
-    <button id="swiperPrev" class="navBtn">‹</button>
+    <main id="board-area">
+      <div id="table-cards" class="card-row"></div>
+    </main>
 
-    <div id="swiperTrack"></div>
-
-    <button id="swiperNext" class="navBtn">›</button>
+    <footer id="player-hand" class="hand-row"></footer>
 
   </div>
-</div>
 
-<!-- POPUP USCITA -->
-<div id="exitPopup" hidden>
-  <div id="exitDialog">
-    <h3>Vuoi uscire dalla partita?</h3>
-    <p>Scegli se salvare i progressi prima di tornare al menu principale.</p>
+  <!-- Overlay SWIPER (inizialmente nascosto) -->
+  <div id="swiperOverlay" class="overlay hidden" aria-hidden="true">
 
-    <button onclick="saveAndExit()">💾 Salva e torna al menu</button>
-    <button onclick="exitWithoutSaving()">↩️ Torna al menu</button>
-    <button onclick="closeExitPopup()">Annulla</button>
+    <button id="closeSwiper" class="close-btn" aria-label="Chiudi vista carte">✕</button>
+
+    <div id="swiperContainer">
+      <button id="prevCard" class="nav-btn">‹</button>
+
+      <div id="swiperTrack"></div>
+
+      <button id="nextCard" class="nav-btn">›</button>
+    </div>
+
   </div>
-</div>
 
-<script src="js/game.js"></script>
-
+  <script src="game.js"></script>
+  <script src="swiper.js"></script>
 </body>
 </html>
