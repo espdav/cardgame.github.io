@@ -2,80 +2,85 @@
 <html lang="it">
 <head>
 <meta charset="UTF-8">
-<title>Gioco di Carte Personalizzato</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gioco di Carte</title>
 <link rel="stylesheet" href="css/style.css">
 </head>
+
 <body>
 
-<div class="container">
+<!-- MENU OPZIONI -->
+<div id="topBar">
+  <div id="gameTitle">Gioco di Carte</div>
 
-<!-- FULLSCREEN BUTTON -->
-<button id="fullscreenBtn" onclick="toggleFullScreen()">Full Screen</button>
+  <button id="optionsBtn" aria-label="Apri menu opzioni">⚙️</button>
 
-<!-- START SCREEN -->
-<div id="startScreen" class="screen">
-  <h2>Benvenuto nel Gioco di Carte</h2>
-  <button onclick="startNewGame()">Nuova Partita</button>
-  <button onclick="loadGame()">Carica Partita</button>
+  <div id="optionsMenu" hidden>
+    <button id="saveBtn">💾 Salva partita</button>
+    <button id="fullscreenBtn">⛶ Full screen</button>
+    <button id="exitBtn">↩️ Esci dalla partita</button>
+  </div>
 </div>
 
-<!-- LOAD SCREEN -->
-<div id="loadScreen" class="screen">
-  <h2>Partite Salvate</h2>
+<!-- SCHERMATA INIZIALE -->
+<div id="startScreen">
+  <h1>Benvenuto nel gioco di carte</h1>
+  <button onclick="startNewGame()">Nuova partita</button>
+  <button onclick="loadGame()">Carica partita</button>
+</div>
+
+<!-- SCHERMATA CARICAMENTI -->
+<div id="loadScreen">
+  <h2>Partite salvate</h2>
   <div id="savedGamesList"></div>
-  <button onclick="backToStart()">Indietro</button>
+  <button onclick="goBackToStart()">Torna al menu</button>
 </div>
 
-<!-- GAME SCREEN -->
-<div id="gameScreen" class="screen">
-  <h2>Gioco di Carte</h2>
+<!-- SCHERMATA DI GIOCO -->
+<div id="gameScreen">
 
-  <div>
-    <button onclick="shuffleDeck()">Mescola Mazzo</button>
+  <!-- TAVOLO -->
+  <div id="table" aria-label="Area di gioco tavolo"></div>
+
+  <!-- MAZZO VISIBILE -->
+  <div id="deckArea">
+    Mazzo rimanente: <span id="deckSize">0</span>
     <button onclick="drawCard()">Pesca</button>
-    <button onclick="putSelectedBottom()">Metti sul fondo</button>
-    <button onclick="toggleDeckView()">Mostra/Nascondi Mazzo</button>
-    <button onclick="saveGamePopup()">Salva Partita</button>
-    <button onclick="exitGame()">Esci dalla Partita</button>
   </div>
 
-  <div>Dimensione mazzo: <span id="deckSize"></span></div>
+  <!-- MANO GIOCATORE -->
+  <div id="hand"></div>
 
-  <h3>Mano</h3>
-  <div id="hand" class="cards"></div>
+</div>
 
-  <h3>Tavolo (5 per riga)</h3>
-  <button onclick="placeSelectedOnTable()">Metti Mano → Tavolo</button>
-  <button onclick="returnSelectedFromTable()">Tavolo → Mano</button>
-  <div id="table" class="cards"></div>
+<!-- OVERLAY SWIPER -->
+<div id="handOverlay" hidden>
+  <div id="overlayContent">
 
-  <div id="deckView">
-    <h3>Mazzo (carte visibili)</h3>
-    <button onclick="moveDeckSelectedToHand()">Mazzo → Mano</button>
-    <div id="deckCards" class="cards"></div>
+    <button id="closeOverlayBtn" aria-label="Chiudi visualizzazione carte">✖</button>
+
+    <button id="swiperPrev" class="navBtn">‹</button>
+
+    <div id="swiperTrack"></div>
+
+    <button id="swiperNext" class="navBtn">›</button>
+
   </div>
 </div>
 
-<!-- ZOOM -->
-<div id="zoomOverlay" onclick="closeZoom()">
-  <img id="zoomImg">
-</div>
+<!-- POPUP USCITA -->
+<div id="exitPopup" hidden>
+  <div id="exitDialog">
+    <h3>Vuoi uscire dalla partita?</h3>
+    <p>Scegli se salvare i progressi prima di tornare al menu principale.</p>
 
-<!-- POPUP GENERICO -->
-<div id="appPopup" class="popup">
-  <div class="popupContent" role="dialog" aria-modal="true" id="popupContent">
-    <p id="popupMessage"></p>
-    <div id="popupButtons"></div>
+    <button onclick="saveAndExit()">💾 Salva e torna al menu</button>
+    <button onclick="exitWithoutSaving()">↩️ Torna al menu</button>
+    <button onclick="closeExitPopup()">Annulla</button>
   </div>
 </div>
 
 <script src="js/game.js"></script>
-<script>
-document.getElementById('startScreen').style.display='block';
-document.getElementById('gameScreen').style.display='none';
-document.getElementById('loadScreen').style.display='none';
-</script>
 
-</div>
 </body>
 </html>
