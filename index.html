@@ -4,86 +4,6 @@
 <meta charset="UTF-8">
 <title>Gioco di Carte Personalizzato</title>
 <link rel="stylesheet" href="css/style.css">
-<style>
-/* --- STILI BASE --- */
-body {
-  font-family: Arial, sans-serif;
-  background: #121212;
-  color: white;
-  margin: 0;
-  padding: 16px;
-}
-button {
-  cursor: pointer;
-  border-radius: 6px;
-  padding: 6px 12px;
-  border: none;
-  background-color: #444;
-  color: white;
-}
-button:hover { background-color: #666; }
-.screen { display: none; }
-.cards {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(225px,1fr));
-  gap: 10px;
-}
-#table.cards { grid-template-columns: repeat(5,225px); justify-content:center; }
-.card {
-  width:225px; height:321px; border-radius:14px;
-  border:2px solid #444; box-shadow:0 4px 8px rgba(0,0,0,0.4);
-  background: #251B1C;
-  overflow:hidden; cursor:pointer; user-select:none;
-}
-.card img { width:100%; height:100%; object-fit:contain; }
-.card.selected { outline: 4px solid gold; }
-#zoomOverlay {
-  position:fixed; top:0; left:0; width:100%; height:100%;
-  display:none; align-items:center; justify-content:center;
-  background: rgba(0,0,0,0.9); z-index:999;
-}
-#zoomOverlay img { max-width:90%; max-height:90%; border-radius:16px; }
-
-/* --- POPUP ESCI --- */
-#exitPopup {
-  display: none;  
-  position: fixed;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  background: rgba(0,0,0,0.8);
-  color: white;
-  z-index: 1000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-#exitPopupContent {
-  background:#251B1C; padding:20px; border-radius:12px;
-  text-align:center; max-width:300px;
-}
-#exitPopupContent button { margin:6px; width:90%; }
-
-/* --- FULLSCREEN BUTTON --- */
-#fullscreenBtn {
-  position: fixed;
-  top: 16px;
-  right: 16px;
-  z-index: 1001;
-  padding: 8px 12px;
-  font-weight: bold;
-}
-
-/* --- RESPONSIVE TABLET 1280x800 --- */
-@media screen and (max-width: 1280px) {
-  #fullscreenBtn {
-    padding: 6px 10px;
-    font-size: 14px;
-  }
-  .cards { grid-template-columns: repeat(auto-fill, minmax(180px,1fr)); }
-  #table.cards { grid-template-columns: repeat(5,180px); }
-  .card { width:180px; height:257px; }
-}
-</style>
 </head>
 <body>
 
@@ -115,7 +35,7 @@ button:hover { background-color: #666; }
     <button onclick="drawCard()">Pesca</button>
     <button onclick="putSelectedBottom()">Metti sul fondo</button>
     <button onclick="toggleDeckView()">Mostra/Nascondi Mazzo</button>
-    <button onclick="saveGame()">Salva Partita</button>
+    <button onclick="saveGamePopup()">Salva Partita</button>
     <button onclick="exitGame()">Esci dalla Partita</button>
   </div>
 
@@ -141,22 +61,16 @@ button:hover { background-color: #666; }
   <img id="zoomImg">
 </div>
 
-<!-- POPUP ESCI -->
-<div id="exitPopup">
-  <div id="exitPopupContent" role="dialog" aria-modal="true" aria-labelledby="exitTitle">
-    <h3 id="exitTitle">Vuoi salvare la partita prima di uscire?</h3>
-    <button onclick="saveAndExit()">💾 Salva e Esci</button>
-    <button onclick="exitWithoutSaving()">🚪 Esci senza salvare</button>
-    <button onclick="closeExitPopup()">❌ Annulla</button>
+<!-- POPUP GENERICO -->
+<div id="appPopup" class="popup">
+  <div class="popupContent" role="dialog" aria-modal="true" id="popupContent">
+    <p id="popupMessage"></p>
+    <div id="popupButtons"></div>
   </div>
 </div>
 
-<!-- JS -->
 <script src="js/game.js"></script>
 <script>
-/***************
- INIT SCHERMATE
-***************/
 document.getElementById('startScreen').style.display='block';
 document.getElementById('gameScreen').style.display='none';
 document.getElementById('loadScreen').style.display='none';
