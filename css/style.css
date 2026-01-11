@@ -1,169 +1,136 @@
 body {
   margin: 0;
-  background: #0e1116;
-  color: white;
-  font-family: system-ui;
+  font-family: Arial, sans-serif;
+  background: #0d0d0d;
+  color: #fff;
 }
 
-/* ---------- TOP BAR ---------- */
-
-#topBar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 8px 14px;
-  background: #1b1f25;
-}
-
-#optionsBtn {
-  font-size: 20px;
-  background: none;
-  border: none;
-  color: white;
-}
-
-#optionsMenu {
-  position: absolute;
-  right: 10px;
-  top: 48px;
-  background: #222834;
-  border-radius: 12px;
-  padding: 10px;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  z-index: 50;
-}
-
-/* ---------- SCHERMATE ---------- */
-
-#startScreen,
-#loadScreen,
-#gameScreen {
-  padding: 20px;
-}
-
-#loadScreen,
-#gameScreen {
+/* hidden utility */
+.hidden {
   display: none;
 }
 
-/* ---------- TAVOLO DI GIOCO ---------- */
-
-#table {
-  position: relative;
-  width: 100%;
-  height: 60vh;
-  border: 2px dashed #666;
-  margin-top: 10px;
-  overflow: hidden;
+/* top bar */
+.top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 16px;
 }
 
-/* CARTE SUL TAVOLO */
-#table .card {
+.icon-btn {
+  font-size: 24px;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+/* options menu */
+.options-menu {
   position: absolute;
-  width: 140px;
-}
-
-/* ---------- MAZZO ---------- */
-
-#deckArea {
+  top: 40px;
+  right: 10px;
+  background: #1f1f1f;
+  border-radius: 8px;
   padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  z-index: 20;
 }
 
-/* ---------- MANO GIOCATORE ---------- */
+.options-menu button {
+  background: #2a2a2a;
+  border: none;
+  color: white;
+  padding: 6px 10px;
+  border-radius: 6px;
+}
 
-#hand {
+/* table area */
+#board-area {
+  padding: 16px;
+  min-height: 400px;
+}
+
+.card-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+/* cards */
+.card {
+  width: 120px;
+  height: 180px;
+  border-radius: 10px;
+  border: 2px solid transparent;
+  cursor: pointer;
+}
+
+.card.selected {
+  border-color: yellow;
+}
+
+/* hand area fixed bottom */
+.hand-row {
   position: fixed;
   bottom: -40px;
   left: 50%;
   transform: translateX(-50%);
   display: flex;
-  gap: 0;
-  z-index: 10;
+  gap: -50px;
+  padding-bottom: 10px;
 }
 
-#hand .card {
-  width: 120px;
-  height: 170px;
-  margin-left: -60px;
-  border: 3px solid transparent;
-  transition: transform .25s, border .25s;
+.hand-row .card {
+  transform: scale(0.8);
+  opacity: 0.9;
 }
 
-#hand .card.selected {
-  border: 3px solid #4CAF50;
-  transform: translateY(-60px) scale(1.05);
-}
-
-#hand .card.raised {
-  transform: translateY(-120px) scale(1.1);
-}
-
-/* ---------- OVERLAY ---------- */
-
-#handOverlay {
+/* overlay */
+.overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,.8);
+  background: rgba(0,0,0,0.85);
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 100;
+  z-index: 50;
 }
 
-#overlayContent {
-  position: relative;
-  width: 90%;
-  height: 90%;
+.close-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 28px;
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+}
+
+/* swiper */
+#swiperContainer {
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
 #swiperTrack {
   display: flex;
   gap: 20px;
   align-items: center;
-  justify-content: center;
-  height: 100%;
 }
 
-.swiper-card {
-  width: 220px;
-  opacity: .5;
-  transition: transform .2s, opacity .2s;
+#swiperTrack .card {
+  width: 180px;
+  height: 260px;
 }
 
-.swiper-card.center {
-  transform: scale(1.2);
-  opacity: 1;
-}
-
-.navBtn {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 30px;
+.nav-btn {
+  font-size: 40px;
   background: none;
   border: none;
   color: white;
-}
-
-#swiperPrev { left: 10px; }
-#swiperNext { right: 10px; }
-
-/* ---------- POPUP USCITA ---------- */
-
-#exitPopup {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,.6);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-#exitDialog {
-  background: #1b1f25;
-  padding: 20px;
-  border-radius: 14px;
-  width: 300px;
 }
