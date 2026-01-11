@@ -1,8 +1,3 @@
-document.getElementById('startScreen').style.display = 'block';
-document.getElementById('gameScreen').style.display = 'none';
-document.getElementById('loadScreen').style.display = 'none';
-document.getElementById('appPopup').style.display = 'none';
-
 /***************
  CARD IMAGES
 ***************/
