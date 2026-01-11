@@ -1,103 +1,153 @@
-let handCards = [];
-let selectedCards = new Set();
+/***************
+  IMMAGINI CARTE
+***************/
+const cardImages = [
+  { front: "cards/foraterra.png", back: "cards/back.png" },
+  { front: "cards/codafrusta.png", back: "cards/back.png" },
+  { front: "cards/longipede.png", back: "cards/back.png" },
+  { front: "cards/manticerio.png", back: "cards/back.png" },
+  { front: "cards/rovistatore.png", back: "cards/back.png" },
+  { front: "cards/spazzino.png", back: "cards/back.png" },
+  { front: "cards/vedetta_occhio_rosso.png", back: "cards/back.png" },
+  { front: "cards/squarciavento_alfa.png", back: "cards/back.png" },
+];
 
+/***************
+  PRELOAD
+***************/
+function preloadImages() {
+  cardImages.forEach(c => {
+    new Image().src = c.front;
+    new Image().src = c.back;
+  });
+}
+preloadImages();
+
+/***************
+  STATO DI GIOCO
+***************/
+let deck = [];
+let hand = [];
+let table = [];
+
+let selectedHand = [];
+let selectedTable = [];
+let selectedDeck = [];
+
+/***************
+  AVVIO SCHERMATE
+***************/
 const startScreen = document.getElementById("start-screen");
 const gameScreen = document.getElementById("game-screen");
-const optionsMenu = document.getElementById("optionsMenu");
 
-const handArea = document.getElementById("player-hand");
-const tableArea = document.getElementById("table-cards");
-
-const swiperOverlay = document.getElementById("swiperOverlay");
-
-// pulsanti start screen
-document.getElementById("newGameBtn").addEventListener("click", startNewGame);
-document.getElementById("loadGameBtn").addEventListener("click", loadGame);
-
-// menu opzioni
-document.getElementById("optionsBtn").addEventListener("click", toggleOptionsMenu);
-document.getElementById("exitGameBtn").addEventListener("click", exitGame);
-document.getElementById("saveGameBtn").addEventListener("click", saveGame);
-document.getElementById("fullscreenBtn").addEventListener("click", toggleFullscreen);
+/***************
+  NUOVA PARTITA
+***************/
+document.getElementById("startGameBtn").addEventListener("click", () => {
+  startNewGame();
+});
 
 function startNewGame() {
+  deck = cardImages.map(c => ({ ...c }));
+  hand = [];
+  table = [];
+
+  selectedHand = [];
+  selectedTable = [];
+  selectedDeck = [];
+
+  shuffle(deck);
+  drawInitialHand();
+
   startScreen.classList.add("hidden");
   gameScreen.classList.remove("hidden");
-  initHand();
+
+  render();
 }
 
-function loadGame() {
-  alert("Funzione carica partita (placeholder)");
-}
-
-function exitGame() {
-  location.reload();
-}
-
-function saveGame() {
-  alert("Partita salvata (placeholder)");
-}
-
-function toggleOptionsMenu() {
-  optionsMenu.classList.toggle("hidden");
-}
-
-function toggleFullscreen() {
-  if (!document.fullscreenElement) {
-    document.documentElement.requestFullscreen();
-    document.getElementById("fullscreenBtn").textContent = "Esci da schermo intero";
-  } else {
-    document.exitFullscreen();
-    document.getElementById("fullscreenBtn").textContent = "Schermo intero";
+/***************
+  PESCA INIZIALE
+***************/
+function drawInitialHand() {
+  for (let i = 0; i < 5 && deck.length; i++) {
+    hand.push(deck.shift());
   }
 }
 
-function initHand() {
-  handCards = ["c1.png","c2.png","c3.png","c4.png","c5.png","c6.png"];
-  renderHand();
+/***************
+  SHUFFLE
+***************/
+function shuffle(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
 }
 
+/***************
+  SELEZIONE
+***************/
+function toggleSelection(card, list) {
+  const idx = list.indexOf(card);
+  if (idx === -1) list.push(card);
+  else list.splice(idx, 1);
+}
+
+/***************
+  RENDER HAND
+***************/
 function renderHand() {
-  handArea.innerHTML = "";
+  const cont = document.getElementById("player-hand");
+  cont.innerHTML = "";
 
-  handCards.forEach((src, index) => {
+  hand.forEach((card, index) => {
+    const div = document.createElement("div");
+    div.className = "hand-card";
+
+    if (selectedHand.includes(card)) div.classList.add("selected");
+
     const img = document.createElement("img");
-    img.src = src;
-    img.classList.add("card");
-    img.dataset.index = index;
+    img.src = card.front;
+    div.appendChild(img);
 
-    if (selectedCards.has(index)) img.classList.add("selected");
+    // tap singolo = selezione
+    div.addEventListener("click", () => {
+      toggleSelection(card, selectedHand);
+      render();
+    });
 
-    img.addEventListener("click", () => toggleSelection(index));
-    img.addEventListener("dblclick", () => openSwiper(index));
+    // doppio tap = apri swiper
+    div.addEventListener("dblclick", () => {
+      openSwiperFromHand(index);
+    });
 
-    img.setAttribute("draggable", true);
-    img.addEventListener("dragstart", dragStart);
-
-    handArea.appendChild(img);
+    cont.appendChild(div);
   });
 }
 
-function toggleSelection(i) {
-  if (selectedCards.has(i)) selectedCards.delete(i);
-  else selectedCards.add(i);
+/***************
+  RENDER TAVOLO
+***************/
+function renderTable() {
+  const cont = document.getElementById("table-cards");
+  cont.innerHTML = "";
+
+  table.forEach(card => {
+    const div = document.createElement("div");
+    div.className = "table-card";
+
+    const img = document.createElement("img");
+    img.src = card.front;
+
+    div.appendChild(img);
+    cont.appendChild(div);
+  });
+}
+
+/***************
+  RENDER COMPLETO
+***************/
+function render() {
   renderHand();
-}
-
-function dragStart(e) {
-  e.dataTransfer.setData("cardIndex", e.target.dataset.index);
-}
-
-tableArea.addEventListener("dragover", e => e.preventDefault());
-
-tableArea.addEventListener("drop", e => {
-  const index = e.dataTransfer.getData("cardIndex");
-  addCardToTable(index);
-});
-
-function addCardToTable(index) {
-  const img = document.createElement("img");
-  img.src = handCards[index];
-  img.classList.add("card");
-  tableArea.appendChild(img);
+  renderTable();
 }
