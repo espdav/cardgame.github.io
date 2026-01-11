@@ -248,7 +248,29 @@ function toggleDeckView() { const v=document.getElementById('deckView'); v.style
 function moveDeckSelectedToHand() { selectedDeck.forEach(c=>{ const i=deck.indexOf(c); if(i!==-1){ deck.splice(i,1); hand.push(c); }}); selectedDeck=[]; render(); }
 
 /***************
- RENDER HELPERS (GESTIONE MANO FISSA E DOUBLE CLICK)
+ DOUBLE-TAP / CLICK HANDLER
+***************/
+let lastTapTime = 0;
+let lastTappedCard = null;
+
+function handleCardClick(card, selectedList, isHand=false) {
+  const now = Date.now();
+
+  if (lastTappedCard === card && now - lastTapTime < 300) {
+    // Doppio click → zoom
+    openZoom(card.front);
+  } else {
+    // Click singolo → selezione
+    toggleSelect(card, selectedList);
+    render();
+  }
+
+  lastTapTime = now;
+  lastTappedCard = card;
+}
+
+/***************
+ RENDER HELPERS
 ***************/
 function makeCardElement(card, selectedList, isHand=false, index=0) {
   const div = document.createElement("div");
@@ -257,33 +279,18 @@ function makeCardElement(card, selectedList, isHand=false, index=0) {
   const img = document.createElement("img");
   img.src = card.front;
 
-  // Se è mano, ridimensiona e sovrapponi
   if (isHand) {
     div.style.width = "110px";
     div.style.height = "157px";
     div.style.position = "relative";
     div.style.marginLeft = index === 0 ? "0px" : "-30px";
-    div.style.zIndex = index; // ultima carta sopra
+    div.style.zIndex = index;
   }
 
   div.appendChild(img);
 
-  let lastTap = 0;
-  div.addEventListener("click", (e) => {
-    const now = Date.now();
-    if (now - lastTap < 300) {
-      // Doppio click → zoom overlay
-      openZoom(card.front);
-    } else {
-      // Click singolo → selezione
-      toggleSelect(card, selectedList);
-      if (isHand) {
-        if(selectedList.includes(card)) div.classList.add("selected");
-        else div.classList.remove("selected");
-      }
-      render();
-    }
-    lastTap = now;
+  div.addEventListener("click", () => {
+    handleCardClick(card, selectedList, isHand);
   });
 
   return div;
@@ -298,7 +305,7 @@ function render() {
   // Tavolo
   const t = document.getElementById("table");
   t.innerHTML = "";
-  table.forEach(c => t.appendChild(makeCardElement(c, selectedTable)));
+  table.forEach((c) => t.appendChild(makeCardElement(c, selectedTable)));
 
   // Mano (fissa in basso, sovrapposta)
   const h = document.getElementById("hand");
@@ -308,7 +315,7 @@ function render() {
   // Mazzo visibile
   const d = document.getElementById("deckCards");
   d.innerHTML = "";
-  deck.forEach(c => d.appendChild(makeCardElement(c, selectedDeck)));
+  deck.forEach((c) => d.appendChild(makeCardElement(c, selectedDeck)));
 }
 
 /***************
