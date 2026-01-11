@@ -34,16 +34,6 @@ let selectedTable = [];
 let selectedDeck = [];
 
 /***************
- DOUBLE-TAP ZOOM
-***************/
-let lastTap = 0;
-function cardTapped(card, imgSrc) {
-  const now = Date.now();
-  if (now - lastTap < 300) openZoom(imgSrc);
-  lastTap = now;
-}
-
-/***************
  FULLSCREEN
 ***************/
 function toggleFullScreen() {
@@ -121,9 +111,9 @@ function startNewGame() {
   shuffle(deck);
   render();
 
-  document.getElementById('startScreen').style.display = 'none';
-  document.getElementById('loadScreen').style.display = 'none';
-  document.getElementById('gameScreen').style.display = 'block';
+  document.getElementById('startScreen').style.display='none';
+  document.getElementById('loadScreen').style.display='none';
+  document.getElementById('gameScreen').style.display='block';
 }
 
 function loadGame() {
@@ -258,21 +248,34 @@ function toggleDeckView() { const v=document.getElementById('deckView'); v.style
 function moveDeckSelectedToHand() { selectedDeck.forEach(c=>{ const i=deck.indexOf(c); if(i!==-1){ deck.splice(i,1); hand.push(c); }}); selectedDeck=[]; render(); }
 
 /***************
- RENDER HELPERS
+ RENDER HELPERS (GESTIONE MANO FISSA E DOUBLE CLICK)
 ***************/
-function makeCardElement(card, selectedList) {
-  const div=document.createElement("div");
-  div.className="card"+(selectedList.includes(card)?" selected":"");
+function makeCardElement(card, selectedList, isHand=false) {
+  const div = document.createElement("div");
+  div.className = "card" + (selectedList.includes(card) ? " selected" : "");
 
-  const img=document.createElement("img");
-  img.src=card.front;
+  const img = document.createElement("img");
+  img.src = card.front;
   div.appendChild(img);
 
-  div.onclick=()=>{
-    toggleSelect(card, selectedList);
-    cardTapped(card, card.front);
-    render();
-  };
+  let lastTap = 0;
+  div.addEventListener("click", (e) => {
+    const now = Date.now();
+    if (now - lastTap < 300) {
+      // Doppio click → zoom overlay
+      openZoom(card.front);
+    } else {
+      // Click singolo → selezione
+      toggleSelect(card, selectedList);
+      if (isHand) {
+        if(selectedList.includes(card)) div.classList.add("selected");
+        else div.classList.remove("selected");
+      }
+      render();
+    }
+    lastTap = now;
+  });
+
   return div;
 }
 
@@ -282,17 +285,20 @@ function makeCardElement(card, selectedList) {
 function render() {
   updateDeckSize();
 
-  const h=document.getElementById("hand");
-  h.innerHTML="";
-  hand.forEach(c=>h.appendChild(makeCardElement(c, selectedHand)));
+  // Tavolo
+  const t = document.getElementById("table");
+  t.innerHTML = "";
+  table.forEach(c => t.appendChild(makeCardElement(c, selectedTable)));
 
-  const t=document.getElementById("table");
-  t.innerHTML="";
-  table.forEach(c=>t.appendChild(makeCardElement(c, selectedTable)));
+  // Mano (fissa in basso)
+  const h = document.getElementById("hand");
+  h.innerHTML = "";
+  hand.forEach(c => h.appendChild(makeCardElement(c, selectedHand, true)));
 
-  const d=document.getElementById("deckCards");
-  d.innerHTML="";
-  deck.forEach(c=>d.appendChild(makeCardElement(c, selectedDeck)));
+  // Mazzo visibile
+  const d = document.getElementById("deckCards");
+  d.innerHTML = "";
+  deck.forEach(c => d.appendChild(makeCardElement(c, selectedDeck)));
 }
 
 /***************
@@ -301,3 +307,4 @@ function render() {
 document.getElementById('gameScreen').style.display='none';
 document.getElementById('loadScreen').style.display='none';
 document.getElementById('appPopup').style.display='none';
+document.getElementById('zoomOverlay').style.display='none';
