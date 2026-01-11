@@ -250,12 +250,22 @@ function moveDeckSelectedToHand() { selectedDeck.forEach(c=>{ const i=deck.index
 /***************
  RENDER HELPERS (GESTIONE MANO FISSA E DOUBLE CLICK)
 ***************/
-function makeCardElement(card, selectedList, isHand=false) {
+function makeCardElement(card, selectedList, isHand=false, index=0) {
   const div = document.createElement("div");
   div.className = "card" + (selectedList.includes(card) ? " selected" : "");
 
   const img = document.createElement("img");
   img.src = card.front;
+
+  // Se è mano, ridimensiona e sovrapponi
+  if (isHand) {
+    div.style.width = "110px";
+    div.style.height = "157px";
+    div.style.position = "relative";
+    div.style.marginLeft = index === 0 ? "0px" : "-30px";
+    div.style.zIndex = index; // ultima carta sopra
+  }
+
   div.appendChild(img);
 
   let lastTap = 0;
@@ -290,10 +300,10 @@ function render() {
   t.innerHTML = "";
   table.forEach(c => t.appendChild(makeCardElement(c, selectedTable)));
 
-  // Mano (fissa in basso)
+  // Mano (fissa in basso, sovrapposta)
   const h = document.getElementById("hand");
   h.innerHTML = "";
-  hand.forEach(c => h.appendChild(makeCardElement(c, selectedHand, true)));
+  hand.forEach((c, i) => h.appendChild(makeCardElement(c, selectedHand, true, i)));
 
   // Mazzo visibile
   const d = document.getElementById("deckCards");
