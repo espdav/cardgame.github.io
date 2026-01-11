@@ -1,3 +1,8 @@
+document.getElementById('startScreen').style.display = 'block';
+document.getElementById('gameScreen').style.display = 'none';
+document.getElementById('loadScreen').style.display = 'none';
+document.getElementById('appPopup').style.display = 'none';
+
 /***************
  CARD IMAGES
 ***************/
@@ -325,3 +330,10 @@ document.getElementById('gameScreen').style.display='none';
 document.getElementById('loadScreen').style.display='none';
 document.getElementById('appPopup').style.display='none';
 document.getElementById('zoomOverlay').style.display='none';
+
+
+function backToStart() {
+  document.getElementById('startScreen').style.display = 'block';
+  document.getElementById('loadScreen').style.display = 'none';
+  document.getElementById('gameScreen').style.display = 'none';
+}
