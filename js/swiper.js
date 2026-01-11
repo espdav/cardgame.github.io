@@ -1,37 +1,77 @@
-let currentIndex = 0;
-
+/***************
+  ELEMENTI SWIPER
+***************/
 const swiperOverlay = document.getElementById("swiperOverlay");
 const swiperTrack = document.getElementById("swiperTrack");
-const closeSwiperBtn = document.getElementById("closeSwiper");
 
-document.getElementById("prevCard").addEventListener("click", () => move(-1));
-document.getElementById("nextCard").addEventListener("click", () => move(1));
+const closeSwiperBtn = document.getElementById("closeSwiper");
+const prevBtn = document.getElementById("prevCard");
+const nextBtn = document.getElementById("nextCard");
+
+let swiperIndex = 0;
+
+/***************
+  APRI DA MANO
+***************/
+function openSwiperFromHand(index) {
+  swiperIndex = index;
+  renderSwiper();
+  swiperOverlay.classList.add("visible");
+  swiperOverlay.setAttribute("aria-hidden", "false");
+}
+
+/***************
+  CHIUDI
+***************/
+function closeSwiper() {
+  swiperOverlay.classList.remove("visible");
+  swiperOverlay.setAttribute("aria-hidden", "true");
+}
+
 closeSwiperBtn.addEventListener("click", closeSwiper);
 
-function openSwiper(index) {
-  currentIndex = index;
+/***************
+  NAVIGAZIONE
+***************/
+prevBtn.addEventListener("click", () => {
+  swiperIndex = (swiperIndex - 1 + hand.length) % hand.length;
   renderSwiper();
-  swiperOverlay.classList.remove("hidden");
-}
+});
 
-function closeSwiper() {
-  swiperOverlay.classList.add("hidden");
-}
-
-function move(dir) {
-  currentIndex = (currentIndex + dir + handCards.length) % handCards.length;
+nextBtn.addEventListener("click", () => {
+  swiperIndex = (swiperIndex + 1) % hand.length;
   renderSwiper();
-}
+});
 
+/***************
+  RENDER SWIPER
+***************/
 function renderSwiper() {
   swiperTrack.innerHTML = "";
 
-  handCards.forEach((src, i) => {
+  hand.forEach((card, i) => {
+    const div = document.createElement("div");
+    div.className = "swiper-card";
+
+    if (i === swiperIndex) div.classList.add("active");
+
     const img = document.createElement("img");
-    img.src = src;
-    img.classList.add("card");
-    if (i === currentIndex) img.style.transform = "scale(1.2)";
-    img.addEventListener("click", () => toggleSelection(i));
-    swiperTrack.appendChild(img);
+    img.src = card.front;
+
+    div.appendChild(img);
+
+    // selezione dentro overlay
+    div.addEventListener("click", () => {
+      toggleSelection(card, selectedHand);
+      render(); // aggiorna mano sotto
+      renderSwiper(); // aggiorna bordo selezione
+    });
+
+    // swipe tap su laterale = vai in quella direzione
+    div.addEventListener("dblclick", () => {
+      closeSwiper();
+    });
+
+    swiperTrack.appendChild(div);
   });
 }
