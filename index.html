@@ -1,67 +1,61 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Gioco di carte</title>
-  <link rel="stylesheet" href="css/style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gioco Carte</title>
+
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
 </head>
+
 <body>
 
-  <!-- SCHERMATA INIZIALE -->
-  <div id="start-screen">
-    <h1>Benvenuto nel gioco di carte</h1>
+  <!-- 🔵 FULLSCREEN SEMPRE VISIBILE -->
+  <button id="fullscreen-btn" class="fullscreen-btn">⛶</button>
 
-    <div class="start-buttons">
-      <button id="newGameBtn">Nuova partita</button>
-      <button id="loadGameBtn">Carica partita</button>
-    </div>
-  </div>
+  <!-- 🟢 SCHERMATA INIZIALE -->
+  <section id="start-screen" class="screen">
+    <h1>Gioco di Carte</h1>
+    <button id="btn-new-game">Nuova partita</button>
+    <button id="btn-load-game">Carica partita</button>
+  </section>
 
-  <!-- SCHERMATA DI GIOCO -->
-  <div id="game-screen" class="hidden">
+  <!-- 🟡 SCHERMATA PARTITE SALVATE -->
+  <section id="saved-games-screen" class="screen">
+    <h2>Partite salvate</h2>
+    <div id="saved-list">Nessun salvataggio al momento</div>
+    <button id="btn-back-saved">Indietro</button>
+  </section>
 
-    <header class="top-bar">
-      <div class="game-title">Partita in corso</div>
+  <!-- 🔴 SCHERMATA DI GIOCO -->
+  <section id="game-screen" class="screen">
 
-      <!-- MENU OPZIONI -->
-      <div class="options-menu-wrapper">
-        <button id="optionsBtn" class="icon-btn" aria-haspopup="true" aria-expanded="false" aria-label="Apri menu opzioni">
-          ⚙️
-        </button>
+    <h2>Tua mano</h2>
+    <div id="hand-cards" class="hand"></div>
 
-        <div id="optionsMenu" class="options-menu hidden" role="menu">
-          <button id="exitGameBtn" role="menuitem">Esci dalla partita</button>
-          <button id="saveGameBtn" role="menuitem">Salva partita</button>
-          <button id="fullscreenBtn" role="menuitem">Schermo intero</button>
+  </section>
+
+  <!-- 🟣 OVERLAY SWIPER (INIZIALMENTE NASCOSTO) -->
+  <div id="card-overlay" class="overlay hidden">
+
+    <div class="overlay-content">
+
+      <button id="overlay-close" class="close-btn">✕</button>
+
+      <div class="swiper">
+        <div class="swiper-wrapper">
+          <!-- Slides inserite via JS -->
         </div>
       </div>
-    </header>
 
-    <main id="board-area">
-      <div id="table-cards" class="card-row"></div>
-    </main>
-
-    <footer id="player-hand" class="hand-row"></footer>
+    </div>
 
   </div>
 
-  <!-- OVERLAY SWIPER (NASCOSTO DI DEFAULT) -->
- <div id="swiperOverlay" class="overlay" aria-hidden="true">
-  <button id="closeSwiper" class="close-btn" aria-label="Chiudi vista carte">✕</button>
-
-  <div id="swiperContainer">
-    <button id="prevCard" class="nav-btn">‹</button>
-    <div id="swiperTrack"></div>
-    <button id="nextCard" class="nav-btn">›</button>
-  </div>
-</div>
-
-  </div>
-
-  <script src="game.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
   <script src="swiper.js"></script>
+  <script src="game.js"></script>
 
 </body>
 </html>
-
