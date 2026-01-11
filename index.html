@@ -9,76 +9,70 @@
 
 <div class="container">
 
-<!-- FULLSCREEN BUTTON -->
-<button id="fullscreenBtn" onclick="toggleFullScreen()">Full Screen</button>
+  <!-- FULLSCREEN BUTTON -->
+  <button id="fullscreenBtn" onclick="toggleFullScreen()">Full Screen</button>
 
-<!-- START SCREEN -->
-<div id="startScreen" class="screen">
-  <h2>Benvenuto nel Gioco di Carte</h2>
-  <button onclick="startNewGame()">Nuova Partita</button>
-  <button onclick="loadGame()">Carica Partita</button>
-</div>
-
-<!-- LOAD SCREEN -->
-<div id="loadScreen" class="screen">
-  <h2>Partite Salvate</h2>
-  <div id="savedGamesList"></div>
-  <button onclick="backToStart()">Indietro</button>
-</div>
-
-<!-- GAME SCREEN -->
-<div id="gameScreen" class="screen">
-  <h2>Gioco di Carte</h2>
-
-  <div>
-    <button onclick="shuffleDeck()">Mescola Mazzo</button>
-    <button onclick="drawCard()">Pesca</button>
-    <button onclick="putSelectedBottom()">Metti sul fondo</button>
-    <button onclick="toggleDeckView()">Mostra/Nascondi Mazzo</button>
-    <button onclick="saveGamePopup()">Salva Partita</button>
-    <button onclick="exitGame()">Esci dalla Partita</button>
+  <!-- START SCREEN -->
+  <div id="startScreen" class="screen">
+    <h2>Benvenuto nel Gioco di Carte</h2>
+    <button onclick="startNewGame()">Nuova Partita</button>
+    <button onclick="loadGame()">Carica Partita</button>
   </div>
 
-  <div>Dimensione mazzo: <span id="deckSize"></span></div>
-
-  
-<h3>Mano</h3>
-  <div id="hand" class="cards"></div>
-
-  <h3>Tavolo (5 per riga)</h3>
-  <button onclick="placeSelectedOnTable()">Metti Mano → Tavolo</button>
-  <button onclick="returnSelectedFromTable()">Tavolo → Mano</button>
-  <div id="table" class="cards"></div>
-
-  <div id="deckView">
-    <h3>Mazzo (carte visibili)</h3>
-    <button onclick="moveDeckSelectedToHand()">Mazzo → Mano</button>
-    <div id="deckCards" class="cards"></div>
+  <!-- LOAD SCREEN -->
+  <div id="loadScreen" class="screen">
+    <h2>Partite Salvate</h2>
+    <div id="savedGamesList"></div>
+    <button onclick="backToStart()">Indietro</button>
   </div>
-</div>
 
-<!-- ZOOM -->
-<div id="zoomOverlay" onclick="closeZoom()">
-  <img id="zoomImg">
-</div>
+  <!-- GAME SCREEN -->
+  <div id="gameScreen" class="screen">
+    <h2>Gioco di Carte</h2>
 
-<!-- POPUP GENERICO -->
-<div id="appPopup" class="popup">
-  <div class="popupContent" role="dialog" aria-modal="true" id="popupContent">
-    <p id="popupMessage"></p>
-    <div id="popupButtons"></div>
+    <div>
+      <button onclick="shuffleDeck()">Mescola Mazzo</button>
+      <button onclick="drawCard()">Pesca</button>
+      <button onclick="putSelectedBottom()">Metti sul fondo</button>
+      <button onclick="toggleDeckView()">Mostra/Nascondi Mazzo</button>
+      <button onclick="saveGamePopup()">Salva Partita</button>
+      <button onclick="exitGame()">Esci dalla Partita</button>
+    </div>
+
+    <div>Dimensione mazzo: <span id="deckSize"></span></div>
+
+    <!-- TAVOLO -->
+    <div id="table" class="cards"></div>
+    <button onclick="placeSelectedOnTable()">Metti Mano → Tavolo</button>
+    <button onclick="returnSelectedFromTable()">Tavolo → Mano</button>
+
+    <!-- MAZZO VISIBILE -->
+    <div id="deckView">
+      <button onclick="moveDeckSelectedToHand()">Mazzo → Mano</button>
+      <div id="deckCards" class="cards"></div>
+    </div>
   </div>
-</div>
 
-<script src="js/game.js"></script>
-<script>
-document.getElementById('startScreen').style.display='block';
-document.getElementById('gameScreen').style.display='none';
-document.getElementById('loadScreen').style.display='none';
-</script>
+  <!-- ZOOM -->
+  <div id="zoomOverlay" onclick="closeZoom()">
+    <img id="zoomImg">
+  </div>
+
+  <!-- POPUP GENERICO -->
+  <div id="appPopup" class="popup">
+    <div class="popupContent" role="dialog" aria-modal="true" id="popupContent">
+      <p id="popupMessage"></p>
+      <div id="popupButtons"></div>
+    </div>
+  </div>
+
+  <script src="js/game.js"></script>
+  <script>
+    document.getElementById('startScreen').style.display='block';
+    document.getElementById('gameScreen').style.display='none';
+    document.getElementById('loadScreen').style.display='none';
+  </script>
 
 </div>
 </body>
 </html>
-
-
